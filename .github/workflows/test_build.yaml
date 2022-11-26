@@ -9,7 +9,7 @@ on:
     - 'tests/**'
     - 'CMakeLists.txt'
 jobs:
-  build-and-publish-image:
+  build-and-test-library:
     runs-on: ubuntu-latest
     steps:
       - name: Install gtest
