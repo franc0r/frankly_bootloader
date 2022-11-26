@@ -9,7 +9,7 @@ on:
     - 'tests/**'
     - 'CMakeLists.txt'
 jobs:
-  build-and-test-library:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Install gtest
@@ -20,4 +20,15 @@ jobs:
           cd build
           cmake ..
           make
-          CTEST_OUTPUT_ON_FAILURE=TRUE make test
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install gtest
+        run: sudo apt-get install libgtest-dev
+      - uses: actions/checkout@v3
+      - name: Build & Test
+        run: |
+          cd build
+          cmake ..
+          make
+          CTEST_OUTPUT_ON_FAILURE=TRUE make test    
