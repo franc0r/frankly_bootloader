@@ -16,6 +16,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <array>
 
 /**
  * @brief Groups all definitions of the frankly boot bootloader
@@ -28,7 +29,7 @@ namespace version {
     constexpr size_t MINOR_IDX = {1U}; //!< Array index of minor version
     constexpr size_t PATCH_IDX = {2U}; //!< Array index of patch version
 
-    constexpr uint8_t VERSION[3U] = {0U, 1U, 0U}; //!< Array containing bootloader version
+    constexpr std::array<uint8_t, 3U> VERSION = {0U, 1U, 0U}; //!< Array containing bootloader version
 }
 
 }; // namespace franklyboot
