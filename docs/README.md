@@ -1,8 +1,5 @@
-# FRANCOR's - Frankly Bootloader
+# ![FRANCOR-LOGO](./images/francor-logo-small.png) FRANCOR's - Frankly Bootloader
 
-## License
-
-BSD 3-Clause License see LICENSE
 
 ## Overview
 
