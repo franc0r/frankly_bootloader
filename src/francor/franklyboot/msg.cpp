@@ -9,13 +9,23 @@
  *
  */
 
- #include "francor/franklyboot/msg.h"
+#include "francor/franklyboot/msg.h"
 
- using namespace franklyboot;
+void franklyboot::msg::convertU32ToMsgData(const uint32_t data, franklyboot::msg::MsgData& msg_data) {
+  constexpr uint32_t NUM_BITS_PER_BYTE = 8U;
 
-void msg::serializeWord(const uint32_t data, msg::MsgData& msg_data) {
+  for (uint32_t idx = 0U; idx < msg_data.size(); idx++) {
+    msg_data[idx] = static_cast<uint8_t>(data >> (idx * NUM_BITS_PER_BYTE));
+  }
 }
 
-uint32_t msg::deserializeWord(const msg::MsgData& msg_data) {
-  return 0U;
+uint32_t franklyboot::msg::convertMsgDataToU32(const franklyboot::msg::MsgData& msg_data) {
+  constexpr uint32_t NUM_BITS_PER_BYTE = 8U;
+
+  uint32_t value = 0;
+  for (auto idx = 0U; idx < sizeof(uint32_t); idx++) {
+    value |= (static_cast<uint32_t>(msg_data.at(idx)) << (idx * NUM_BITS_PER_BYTE));
+  }
+
+  return value;
 }

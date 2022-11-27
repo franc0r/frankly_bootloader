@@ -13,12 +13,16 @@
 
 #ifdef __cplusplus
 
+#include <francor/franklyboot/hardware_interface.h>
 #include <francor/franklyboot/msg.h>
 
 #include <array>
 #include <cstddef>
 #include <cstdint>
 
+/**
+ * @brief Groups all definitions of the frankly boot bootloader
+ */
 namespace franklyboot {
 
 /**
@@ -78,6 +82,8 @@ class Handler {
   [[nodiscard]] auto getFlashAppNumPages() const { return FLASH_APP_NUM_PAGES; }
 
  private:
+  void handleReqPing();
+
   /** \brief Command buffer for commands which cannot be processed immediatly */
   CommandBuffer _cmd_buffer = {CommandBuffer::NONE};
 

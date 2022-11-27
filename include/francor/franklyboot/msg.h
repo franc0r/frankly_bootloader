@@ -25,7 +25,7 @@ namespace franklyboot {
 
 /**
  * @brief Groups all message definitions into one namespace
- * 
+ *
  */
 namespace msg {
 
@@ -33,19 +33,19 @@ namespace msg {
  * @brief Response send from device to host
  */
 enum ResponseType : uint8_t {
-  RESP_NONE = 0x00U,    //!< Unused / ignored
-  RESP_ACK = 0x01U,     //!< Acknowledge
-  RESP_ERR = 0x02U,     //!< General error
-  RESP_UNKNOWN_REQ = 0x03U, //!< Unknow request type
-  RESP_ACK_PAGE_FULL = 0x04U, //!< Acknowledge and info that page buffer is full
-  RESP_ERR_PAGE_FULL = 0x05U, //!< Error, word not writable page buffer is full
+  RESP_NONE = 0x00U,           //!< Unused / ignored
+  RESP_ACK = 0x01U,            //!< Acknowledge
+  RESP_ERR = 0x02U,            //!< General error
+  RESP_UNKNOWN_REQ = 0x03U,    //!< Unknow request type
+  RESP_ACK_PAGE_FULL = 0x04U,  //!< Acknowledge and info that page buffer is full
+  RESP_ERR_PAGE_FULL = 0x05U,  //!< Error, word not writable page buffer is full
 };
 
 /**
  * @brief Requests send from host to device
  */
 enum RequestType : uint16_t {
-    REQ_PING = 0x0000U, //!< Ping device | Response is bootloader version
+  REQ_PING = 0x0000U,  //!< Ping device | Response is bootloader version
 };
 
 /** \brief Definition of the MsgData representation */
@@ -61,24 +61,24 @@ struct Msg {
   RequestType request;
   ResponseType response;
   uint8_t packet_id;
-  MsgData data;  // Maybe union and use std::array  
+  MsgData data;  // Maybe union and use std::array
 };
 
 /**
- * @brief Serializes a word to a data array
- * 
+ * @brief Converts a unsigned int 32-bit value to the message buffer
+ *
  * @param data Data to serialzize as word
  * @param msg_data Reference to data container (bytes)
  */
-void serializeWord(uint32_t data, msg::MsgData& msg_data);
+void convertU32ToMsgData(uint32_t data, msg::MsgData& msg_data);
 
 /**
-  * @brief Deserialize a word from a data array
-  * 
-  * @param msg_data msg_data Reference to data container (bytes)
-  * @return uint32_t Deserialized word
-  */
-uint32_t deserializeWord(const msg::MsgData& msg_data);
+ * @brief Converts the message buffer to a unsigned int 32-bit value
+ *
+ * @param msg_data msg_data Reference to data container (bytes)
+ * @return uint32_t Deserialized word
+ */
+uint32_t convertMsgDataToU32(const msg::MsgData& msg_data);
 
 }; /* namespace msg */
 

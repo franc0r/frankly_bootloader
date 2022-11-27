@@ -24,7 +24,36 @@ namespace franklyboot {
 #define FRANKLYBOOT_HANDLER_TEMPL_PREFIX Handler<FLASH_START, FLASH_APP_FIRST_PAGE, FLASH_SIZE, FLASH_PAGE_SIZE>
 
 FRANKLYBOOT_HANDLER_TEMPL
-void Handler<FLASH_START, FLASH_APP_FIRST_PAGE, FLASH_SIZE, FLASH_PAGE_SIZE>::processBufferedCmds() {}
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processBufferedCmds() {
+  switch (this->_cmd_buffer) {
+    case CommandBuffer::NONE:
+      break;
+    case CommandBuffer::RESET_DEVICE:
+      franklyboot::hwi::resetDevice();
+      break;
+    case CommandBuffer::START_APP:
+      const uint32_t app_flash_address = FLASH_START + FLASH_PAGE_SIZE * FLASH_APP_FIRST_PAGE;
+      franklyboot::hwi::startApp(app_flash_address);
+      break;
+  }
+
+  _cmd_buffer = CommandBuffer::NONE;
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processRequest(const msg::Msg &msg) {
+  switch (msg.request) {
+    case msg::REQ_PING:
+
+    default:
+      this->_response = msg;
+      this->_response.response = msg::RESP_UNKNOWN_REQ;
+      break;
+  };
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPing() {}
 
 }; /* namespace franklyboot */
 
