@@ -42,18 +42,36 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processBufferedCmds() {
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processRequest(const msg::Msg &msg) {
+  /* First response is always an error as long as request is not handeld*/
+  this->_response = msg;
+  this->_response.response = msg::RESP_ERR;
+
   switch (msg.request) {
     case msg::REQ_PING:
-
+      handleReqPing();
+      break;
     default:
-      this->_response = msg;
       this->_response.response = msg::RESP_UNKNOWN_REQ;
       break;
   };
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
-void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPing() {}
+auto FRANKLYBOOT_HANDLER_TEMPL_PREFIX::getResponse() const { return this->_response; }
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPing() {
+  /* Transmit bootloader version as ping response */
+  this->_response = msg::Msg(msg::REQ_PING, msg::RESP_ACK, 0);
+
+  for (auto idx = 0U; idx < this->_response.data.size(); idx++) {
+    if (idx < version::VERSION.size()) {
+      this->_response.data[idx] = version::VERSION.at(idx);
+    } else {
+      this->_response.data[idx] = 0;
+    }
+  }
+}
 
 }; /* namespace franklyboot */
 

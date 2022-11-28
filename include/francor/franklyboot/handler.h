@@ -13,6 +13,7 @@
 
 #ifdef __cplusplus
 
+#include <francor/franklyboot/franklyboot.h>
 #include <francor/franklyboot/hardware_interface.h>
 #include <francor/franklyboot/msg.h>
 
@@ -71,7 +72,7 @@ class Handler {
    *
    * @return auto Response message
    */
-  auto getResponse();
+  auto getResponse() const;
 
   /* Getters */
   [[nodiscard]] auto getFlashStartAddress() const { return FLASH_START; }

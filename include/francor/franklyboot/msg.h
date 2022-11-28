@@ -45,6 +45,7 @@ enum ResponseType : uint8_t {
  * @brief Requests send from host to device
  */
 enum RequestType : uint16_t {
+  /* General requests */
   REQ_PING = 0x0000U,  //!< Ping device | Response is bootloader version
 };
 
