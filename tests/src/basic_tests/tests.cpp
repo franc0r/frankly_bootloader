@@ -13,7 +13,19 @@
 #include <francor/franklyboot/handler.h>
 #include <gtest/gtest.h>
 
-using namespace franklyboot;
+using namespace franklyboot;  // NOLINT
+
+/**
+ * @brief Test if version is correct
+ */
+TEST(BasicTests, checkVersion)  // NOLINT
+{
+  constexpr std::array<uint32_t, 3U> EXPECTED_VERSION = {0, 1, 0};
+
+  EXPECT_EQ(version::VERSION.at(0), EXPECTED_VERSION.at(0));
+  EXPECT_EQ(version::VERSION.at(1), EXPECTED_VERSION.at(1));
+  EXPECT_EQ(version::VERSION.at(2), EXPECTED_VERSION.at(2));
+}
 
 /**
  * @brief Test if static values are calculated correctly from the template arguments
