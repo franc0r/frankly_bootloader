@@ -33,12 +33,16 @@ namespace msg {
  * @brief Response send from device to host
  */
 enum ResponseType : uint8_t {
-  RESP_NONE = 0x00U,           //!< Unused / ignored
-  RESP_ACK = 0x01U,            //!< Acknowledge
-  RESP_ERR = 0x02U,            //!< General error
-  RESP_UNKNOWN_REQ = 0x03U,    //!< Unknow request type
-  RESP_ACK_PAGE_FULL = 0x04U,  //!< Acknowledge and info that page buffer is full
-  RESP_ERR_PAGE_FULL = 0x05U,  //!< Error, word not writable page buffer is full
+  RESP_NONE = 0x00U,  //!< Unused / ignored
+  RESP_ACK = 0x01U,   //!< Acknowledge
+
+  RESP_ERR = 0xFEU,                //!< General error
+  RESP_UNKNOWN_REQ = 0xFDU,        //!< Unknow request type
+  RESP_ERR_NOT_SUPPORTED = 0xFCU,  //!< Error, command known but not supported
+  RESP_ERR_CRC_INVLD = 0xFBU,      //!< Error, CRC check failed
+  RESP_ACK_PAGE_FULL = 0xFAU,      //!< Acknowledge and info that page buffer is full
+  RESP_ERR_PAGE_FULL = 0xF9U,      //!< Error, word not writable page buffer is full
+
 };
 
 /**
@@ -46,7 +50,9 @@ enum ResponseType : uint8_t {
  */
 enum RequestType : uint16_t {
   /* General requests */
-  REQ_PING = 0x0000U,  //!< Ping device | Response is bootloader version
+  REQ_PING = 0x0001U,          //!< Ping device | Response is bootloader version
+  REQ_RESET_DEVICE = 0x0011U,  //!< Resets the device (hardware reset)
+  REQ_START_APP = 0x0012U,     //!< Start application and exit bootloader
 };
 
 /** \brief Definition of the MsgData representation */
