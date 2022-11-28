@@ -5,8 +5,9 @@ The following table shows the supported request types. To get detailed informati
 
 | Enum                                  | ID (Hex) | Short Description                                                | Implemented | Tested |
 |---------------------------------------|----------|------------------------------------------------------------------|-------------|--------|
-| REQ_PING                              | 0x0000   | Network search via sync for multi device networks                | no          | no     |
-| REQ_RESET_DEVICE                      | 0x0010   | Resets the device                                                | no          | no     |
+| REQ_PING                              | 0x0001   | Network search via sync for multi device networks                | yes         | yes    |
+| REQ_RESET_DEVICE                      | 0x0011   | Resets the device                                                | yes         | yes    |
+| REQ_START_APP                         | 0x0012   | Starts the application                                           | no          | no     |
 | **Device Information**                |
 | REQ_DEV_INFO_BOOTLOADER_VERSION       | 0x0101   | Reads the used version of the bootloader                         | no          | no     |
 | REQ_DEV_INFO_BOOTLOADER_CRC           | 0x0102   | Reads the CRC value of the bootloader (calculated)               | no          | no     |
