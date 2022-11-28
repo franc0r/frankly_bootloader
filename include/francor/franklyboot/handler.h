@@ -85,6 +85,9 @@ class Handler {
  private:
   void handleReqPing();
   void handleReqResetDevice();
+  void handleReqStartApp(const msg::Msg& request);
+
+  [[nodiscard]] bool isAppCRCValid() const;
 
   /** \brief Command buffer for commands which cannot be processed immediatly */
   CommandBuffer _cmd_buffer = {CommandBuffer::NONE};

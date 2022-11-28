@@ -41,7 +41,7 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processBufferedCmds() {
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
-void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processRequest(const msg::Msg &msg) {
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processRequest(const msg::Msg& msg) {
   /* First response is always an error as long as request is not handeld*/
   this->_response = msg;
   this->_response.response = msg::RESP_ERR;
@@ -53,6 +53,10 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processRequest(const msg::Msg &msg) {
 
     case msg::REQ_RESET_DEVICE:
       handleReqResetDevice();
+      break;
+
+    case msg::REQ_START_APP:
+      handleReqStartApp(msg);
       break;
 
     default:
@@ -80,10 +84,36 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPing() {
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqResetDevice() {
-  /* Transmit bootloader version as ping response */
+  /* Queue reset device command */
   this->_response = msg::Msg(msg::REQ_RESET_DEVICE, msg::RESP_ACK, 0);
   this->_cmd_buffer = CommandBuffer::RESET_DEVICE;
 }
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqStartApp(const msg::Msg& request) {
+  constexpr uint32_t START_APP_UNSAFE_WORD = 0xFFFFFFFFU;
+
+  this->_response.request = msg::REQ_START_APP;
+  this->_response.data = msg::MsgData({0});
+
+  const bool start_app_safe = (msg::convertMsgDataToU32(request.data) != START_APP_UNSAFE_WORD);
+  if (start_app_safe) {
+    const bool is_crc_valid = isAppCRCValid();
+    if (is_crc_valid) {
+      this->_cmd_buffer = CommandBuffer::START_APP;
+      this->_response.response = msg::RESP_ACK;
+    } else {
+      this->_response.response = msg::RESP_ERR_CRC_INVLD;
+    }
+  } else {
+    this->_cmd_buffer = CommandBuffer::START_APP;
+    this->_response.response = msg::RESP_ACK;
+    this->_response.data = request.data;
+  }
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+[[nodiscard]] bool FRANKLYBOOT_HANDLER_TEMPL_PREFIX::isAppCRCValid() const { return false; }
 
 }; /* namespace franklyboot */
 
