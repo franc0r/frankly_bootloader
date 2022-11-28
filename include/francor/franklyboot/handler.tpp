@@ -50,6 +50,11 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processRequest(const msg::Msg &msg) {
     case msg::REQ_PING:
       handleReqPing();
       break;
+
+    case msg::REQ_RESET_DEVICE:
+      handleReqResetDevice();
+      break;
+
     default:
       this->_response.response = msg::RESP_UNKNOWN_REQ;
       break;
@@ -71,6 +76,13 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPing() {
       this->_response.data[idx] = 0;
     }
   }
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqResetDevice() {
+  /* Transmit bootloader version as ping response */
+  this->_response = msg::Msg(msg::REQ_RESET_DEVICE, msg::RESP_ACK, 0);
+  this->_cmd_buffer = CommandBuffer::RESET_DEVICE;
 }
 
 }; /* namespace franklyboot */

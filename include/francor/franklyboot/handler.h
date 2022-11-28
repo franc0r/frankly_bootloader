@@ -84,6 +84,7 @@ class Handler {
 
  private:
   void handleReqPing();
+  void handleReqResetDevice();
 
   /** \brief Command buffer for commands which cannot be processed immediatly */
   CommandBuffer _cmd_buffer = {CommandBuffer::NONE};
