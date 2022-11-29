@@ -228,6 +228,7 @@ TEST_F(GeneralRequestTests, ReqStartAppCRCInvalid) {
 }
 
 TEST_F(GeneralRequestTests, ReqStartAppCRCValid) {
+  constexpr uint32_t CRC_VALUE = 0xDEADBEEF;
   constexpr msg::RequestType REQUEST = msg::REQ_START_APP;
   constexpr uint8_t PACKET_ID = 0;
   constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
@@ -236,11 +237,10 @@ TEST_F(GeneralRequestTests, ReqStartAppCRCValid) {
 
   /* Add CRC value to flash */
   const uint32_t crc_flash_address = FLASH_START + FLASH_SIZE - 4U;
-  g_pTestInstance->addFlashByte(crc_flash_address, 0xEF);
-  g_pTestInstance->addFlashByte(crc_flash_address + 1U, 0xBE);
-  g_pTestInstance->addFlashByte(crc_flash_address + 2U, 0xAD);
-  g_pTestInstance->addFlashByte(crc_flash_address + 3U, 0xDE);
-  g_pTestInstance->setCRCResult(0xDEADBEEF);
+  for (auto idx = 0U; idx < sizeof(uint32_t); idx++) {
+    g_pTestInstance->addFlashByte(crc_flash_address + idx, static_cast<uint8_t>(CRC_VALUE >> (idx * 8U)));
+  }
+  g_pTestInstance->setCRCResult(CRC_VALUE);
 
   /* Create request */
   msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
