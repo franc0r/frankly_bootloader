@@ -29,6 +29,9 @@ constexpr uint32_t FLASH_SIZE = FLASH_NUM_PAGES * FLASH_PAGE_SIZE;
 class GeneralRequestTests;
 GeneralRequestTests* g_pTestInstance = nullptr;
 
+/**
+ * @brief Test class for simulation of device
+ */
 class GeneralRequestTests : public ::testing::Test {
  public:
   GeneralRequestTests() = default;
@@ -52,6 +55,8 @@ class GeneralRequestTests : public ::testing::Test {
     return value;
   }
 
+  [[nodiscard]] auto& getHandler() { return _handler; }
+
   /* Called by HWI functions */
 
   void resetDevice() { _resetDeviceCalled = true; }
@@ -74,7 +79,11 @@ class GeneralRequestTests : public ::testing::Test {
   uint32_t _crc_result = {0U};
 
   std::map<uint32_t, uint8_t> _flash_simulation;
+
+  Handler<FLASH_START, FLASH_APP_FIRST_PAGE, FLASH_SIZE, FLASH_PAGE_SIZE> _handler;
 };
+
+// Hardware Interface -------------------------------------------------------------------------------------------------
 
 void hwi::resetDevice() {
   if (g_pTestInstance != nullptr) {
@@ -105,19 +114,20 @@ void hwi::startApp(uint32_t app_flash_address) {
   return value;
 }
 
+// Tests --------------------------------------------------------------------------------------------------------------
+
 /**
  * @brief Check if the bootloader response is correct for unknown requests
  */
 TEST_F(GeneralRequestTests, UnknownReq) {
   constexpr uint16_t INVALID_REQUEST_TYPE = 0xDEAD;
-  Handler<FLASH_START, FLASH_APP_FIRST_PAGE, FLASH_SIZE, FLASH_PAGE_SIZE> handler;
 
   msg::Msg request_msg;
   request_msg.request = static_cast<msg::RequestType>(INVALID_REQUEST_TYPE);
 
-  handler.processRequest(request_msg);
+  getHandler().processRequest(request_msg);
 
-  const auto response = handler.getResponse();
+  const auto response = getHandler().getResponse();
 
   EXPECT_EQ(response.request, INVALID_REQUEST_TYPE);
   EXPECT_EQ(response.response, msg::RESP_UNKNOWN_REQ);
@@ -132,14 +142,13 @@ TEST_F(GeneralRequestTests, ReqPing) {
   constexpr uint8_t PACKET_ID = 0;
   constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
   constexpr msg::MsgData EXPECTED_DATA = {version::VERSION[0], version::VERSION[1], version::VERSION[2], 0};
-  Handler<FLASH_START, FLASH_APP_FIRST_PAGE, FLASH_SIZE, FLASH_PAGE_SIZE> handler;
 
   /* Create request */
   msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
 
   /* Process request and get response */
-  handler.processRequest(request_msg);
-  const auto response = handler.getResponse();
+  getHandler().processRequest(request_msg);
+  const auto response = getHandler().getResponse();
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
@@ -156,21 +165,20 @@ TEST_F(GeneralRequestTests, ReqResetDevice) {
   constexpr msg::RequestType REQUEST = msg::REQ_RESET_DEVICE;
   constexpr uint8_t PACKET_ID = 0;
   constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
-  Handler<FLASH_START, FLASH_APP_FIRST_PAGE, FLASH_SIZE, FLASH_PAGE_SIZE> handler;
 
   /* Create request */
   msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
 
   /* Process request and get response */
-  handler.processRequest(request_msg);
-  const auto response = handler.getResponse();
+  getHandler().processRequest(request_msg);
+  const auto response = getHandler().getResponse();
 
   /* Check response */
   EXPECT_EQ(false, this->resetDeviceCalled());
   EXPECT_EQ(response.request, REQUEST);
   EXPECT_EQ(response.response, EXPECTED_RESPONSE);
 
-  handler.processBufferedCmds();
+  getHandler().processBufferedCmds();
   EXPECT_EQ(true, this->resetDeviceCalled());
 }
 
@@ -179,15 +187,14 @@ TEST_F(GeneralRequestTests, ReqStartAppUnsafe) {
   constexpr uint8_t PACKET_ID = 0;
   constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
   constexpr msg::MsgData EXPECTED_DATA = {0xFF, 0xFF, 0xFF, 0xFF};
-  Handler<FLASH_START, FLASH_APP_FIRST_PAGE, FLASH_SIZE, FLASH_PAGE_SIZE> handler;
 
   /* Create request */
   msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
   request_msg.data = EXPECTED_DATA;
 
   /* Process request and get response */
-  handler.processRequest(request_msg);
-  const auto response = handler.getResponse();
+  getHandler().processRequest(request_msg);
+  const auto response = getHandler().getResponse();
 
   /* Check response */
   EXPECT_EQ(this->startAppCalled(), false);
@@ -197,7 +204,7 @@ TEST_F(GeneralRequestTests, ReqStartAppUnsafe) {
     EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
   }
 
-  handler.processBufferedCmds();
+  getHandler().processBufferedCmds();
   EXPECT_EQ(this->startAppCalled(), true);
 }
 
@@ -206,14 +213,13 @@ TEST_F(GeneralRequestTests, ReqStartAppCRCInvalid) {
   constexpr uint8_t PACKET_ID = 0;
   constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR_CRC_INVLD;
   constexpr msg::MsgData EXPECTED_DATA = {0, 0, 0, 0};
-  Handler<FLASH_START, FLASH_APP_FIRST_PAGE, FLASH_SIZE, FLASH_PAGE_SIZE> handler;
 
   /* Create request */
   msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
 
   /* Process request and get response */
-  handler.processRequest(request_msg);
-  const auto response = handler.getResponse();
+  getHandler().processRequest(request_msg);
+  const auto response = getHandler().getResponse();
 
   /* Check response */
   EXPECT_EQ(this->startAppCalled(), false);
@@ -223,7 +229,7 @@ TEST_F(GeneralRequestTests, ReqStartAppCRCInvalid) {
     EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
   }
 
-  handler.processBufferedCmds();
+  getHandler().processBufferedCmds();
   EXPECT_EQ(this->startAppCalled(), false);
 }
 
@@ -233,7 +239,6 @@ TEST_F(GeneralRequestTests, ReqStartAppCRCValid) {
   constexpr uint8_t PACKET_ID = 0;
   constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
   constexpr msg::MsgData EXPECTED_DATA = {0, 0, 0, 0};
-  Handler<FLASH_START, FLASH_APP_FIRST_PAGE, FLASH_SIZE, FLASH_PAGE_SIZE> handler;
 
   /* Add CRC value to flash */
   const uint32_t crc_flash_address = FLASH_START + FLASH_SIZE - 4U;
@@ -246,8 +251,8 @@ TEST_F(GeneralRequestTests, ReqStartAppCRCValid) {
   msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
 
   /* Process request and get response */
-  handler.processRequest(request_msg);
-  const auto response = handler.getResponse();
+  getHandler().processRequest(request_msg);
+  const auto response = getHandler().getResponse();
 
   /* Check response */
   EXPECT_EQ(this->startAppCalled(), false);
@@ -257,6 +262,6 @@ TEST_F(GeneralRequestTests, ReqStartAppCRCValid) {
     EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
   }
 
-  handler.processBufferedCmds();
+  getHandler().processBufferedCmds();
   EXPECT_EQ(this->startAppCalled(), true);
 }
