@@ -7,7 +7,7 @@ The following table shows the supported request types. To get detailed informati
 |---------------------------------------|----------|------------------------------------------------------------------|-------------|--------|
 | REQ_PING                              | 0x0001   | Network search via sync for multi device networks                | yes         | yes    |
 | REQ_RESET_DEVICE                      | 0x0011   | Resets the device                                                | yes         | yes    |
-| REQ_START_APP                         | 0x0012   | Starts the application                                           | no          | no     |
+| REQ_START_APP                         | 0x0012   | Starts the application                                           | yes         | yes     |
 | **Device Information**                |
 | REQ_DEV_INFO_BOOTLOADER_VERSION       | 0x0101   | Reads the used version of the bootloader                         | no          | no     |
 | REQ_DEV_INFO_BOOTLOADER_CRC           | 0x0102   | Reads the CRC value of the bootloader (calculated)               | no          | no     |

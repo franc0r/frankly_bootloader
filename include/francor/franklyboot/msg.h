@@ -53,6 +53,15 @@ enum RequestType : uint16_t {
   REQ_PING = 0x0001U,          //!< Ping device | Response is bootloader version
   REQ_RESET_DEVICE = 0x0011U,  //!< Resets the device (hardware reset)
   REQ_START_APP = 0x0012U,     //!< Start application and exit bootloader
+
+  /* Device information */
+  REQ_DEV_INFO_BOOTLOADER_VERSION = 0x0101U,  //!< Reads the bootloader version
+  REQ_DEV_INFO_BOOTLOADER_CRC = 0x0102U,      //!< Calculates the CRC of the bootloader flash area
+  REQ_DEV_INFO_VID = 0x0103U,                 //!< Reads the vendor id
+  REQ_DEV_INFO_PID = 0x0104U,                 //!< Reads the product id
+  REQ_DEV_INFO_PRD = 0x0105U,                 //!< Reads the production date
+  REQ_DEV_INFO_UID = 0x0106U,                 //!< Reads the device unique ID
+
 };
 
 /** \brief Definition of the MsgData representation */
