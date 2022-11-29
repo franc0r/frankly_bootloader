@@ -14,5 +14,14 @@
             "problemMatcher":"$gcc",
             "options": {"cwd": "${workspaceFolder}/build"}
         },
+        {
+            "label": "Cleanup",
+            "type": "shell",
+            "command": "rm compile_commands.json; rm -r build/*",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+        }
     ]
 }
