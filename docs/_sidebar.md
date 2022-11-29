@@ -6,6 +6,14 @@
     * [REQ_PING](./protocol/RequestTypes/REQ_PING.md)
     * [REQ_RESET_DEVICE](./protocol/RequestTypes/REQ_RESET_DEVICE.md)
     * [REQ_START_APP](./protocol/RequestTypes/REQ_START_APP.md)
+    * [REQ_DEV_INFO_BOOTLOADER_VERSION](./protocol/RequestTypes/REQ_DEV_INFO_BOOTLOADER_VERSION.md)
+    * [REQ_DEV_INFO_BOOTLOADER_CRC](./protocol/RequestTypes/REQ_DEV_INFO_BOOTLOADER_CRC.md)
+    * [REQ_DEV_INFO_VID](./protocol/RequestTypes/REQ_DEV_INFO_VID.md)
+    * [REQ_DEV_INFO_PID](./protocol/RequestTypes/REQ_DEV_INFO_PID.md)
+
+
+
+
   * [Response Types](./protocol/ResponseTypes.md)
 
 * [LICENSE](./LICENSE)

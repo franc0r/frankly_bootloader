@@ -59,6 +59,30 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processRequest(const msg::Msg& msg) {
       handleReqStartApp(msg);
       break;
 
+    case msg::REQ_DEV_INFO_BOOTLOADER_VERSION:
+      handleReqInfoBootloaderVer();
+      break;
+
+    case msg::REQ_DEV_INFO_BOOTLOADER_CRC:
+      handleReqInfoBootloaderCRC();
+      break;
+
+    case msg::REQ_DEV_INFO_VID:
+      handleReqInfoVendorID();
+      break;
+
+    case msg::REQ_DEV_INFO_PID:
+      handleReqInfoProductID();
+      break;
+
+    case msg::REQ_DEV_INFO_PRD:
+      handleReqInfoProductionDate();
+      break;
+
+    case msg::REQ_DEV_INFO_UID:
+      handleReqInfoUniqueID();
+      break;
+
     default:
       this->_response.response = msg::RESP_UNKNOWN_REQ;
       break;
@@ -111,6 +135,47 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqStartApp(const msg::Msg& request
   }
 }
 
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoBootloaderVer() {
+  this->_response = msg::Msg(msg::REQ_DEV_INFO_BOOTLOADER_VERSION, msg::RESP_ACK, 0);
+  this->_response.data[0] = version::VERSION[0];
+  this->_response.data[1] = version::VERSION[1];
+  this->_response.data[2] = version::VERSION[2];
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoBootloaderCRC() {
+  const uint8_t* bootl_start_addr = (uint8_t*)(FLASH_START);
+  const uint32_t bootl_size = FLASH_APP_FIRST_PAGE * FLASH_PAGE_SIZE;
+  const uint32_t crc_value = hwi::calculateCRC(bootl_start_addr, bootl_size);
+
+  this->_response = msg::Msg(msg::REQ_DEV_INFO_BOOTLOADER_CRC, msg::RESP_ACK, 0);
+  msg::convertU32ToMsgData(crc_value, this->_response.data);
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoVendorID() {
+  this->_response = msg::Msg(msg::REQ_DEV_INFO_VID, msg::RESP_ACK, 0);
+  msg::convertU32ToMsgData(hwi::getVendorID(), this->_response.data);
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoProductID() {
+  this->_response = msg::Msg(msg::REQ_DEV_INFO_PID, msg::RESP_ACK, 0);
+  msg::convertU32ToMsgData(hwi::getProductID(), this->_response.data);
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoProductionDate() {
+  this->_response = msg::Msg(msg::REQ_DEV_INFO_PRD, msg::RESP_ACK, 0);
+  msg::convertU32ToMsgData(hwi::getProductionDate(), this->_response.data);
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoUniqueID() {
+  this->_response = msg::Msg(msg::REQ_DEV_INFO_UID, msg::RESP_ACK, 0);
+  msg::convertU32ToMsgData(hwi::getUniqueID(), this->_response.data);
+}
 FRANKLYBOOT_HANDLER_TEMPL
 [[nodiscard]] bool FRANKLYBOOT_HANDLER_TEMPL_PREFIX::isAppCRCValid() const {
   constexpr uint32_t NUM_BITS_PER_BYTE = 8U;

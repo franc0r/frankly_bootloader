@@ -55,6 +55,12 @@ class DeviceInfoTests : public ::testing::Test {
     return value;
   }
 
+  [[nodiscard]] auto getBootloaderCRC() const { return _bootloader_crc; }
+  [[nodiscard]] auto getVendorID() const { return _vendor_id; }
+  [[nodiscard]] auto getProductID() const { return _product_id; }
+  [[nodiscard]] auto getProductionDate() const { return _production_date; }
+  [[nodiscard]] auto getUniqueID() const { return _unique_id; }
+
   [[nodiscard]] auto& getHandler() { return _handler; }
 
   /* Called by HWI functions */
@@ -73,6 +79,12 @@ class DeviceInfoTests : public ::testing::Test {
   }
 
  private:
+  const uint32_t _bootloader_crc = {0xB00D1234};
+  const uint32_t _vendor_id = {0xDEA0B00F};
+  const uint32_t _product_id = {0xEFABCDEF};
+  const uint32_t _production_date = {0x29019019};
+  const uint32_t _unique_id = {0x12345678};
+
   bool _resetDeviceCalled = {false};
   bool _startAppCalled = {false};
 
@@ -89,6 +101,42 @@ void hwi::resetDevice() {
   if (g_pTestInstance != nullptr) {
     g_pTestInstance->resetDevice();
   }
+}
+
+[[nodiscard]] uint32_t hwi::getVendorID() {
+  uint32_t result = 0U;
+  if (g_pTestInstance != nullptr) {
+    result = g_pTestInstance->getVendorID();
+  }
+
+  return result;
+}
+
+[[nodiscard]] uint32_t hwi::getProductID() {
+  uint32_t result = 0U;
+  if (g_pTestInstance != nullptr) {
+    result = g_pTestInstance->getProductID();
+  }
+
+  return result;
+}
+
+[[nodiscard]] uint32_t hwi::getProductionDate() {
+  uint32_t result = 0U;
+  if (g_pTestInstance != nullptr) {
+    result = g_pTestInstance->getProductionDate();
+  }
+
+  return result;
+}
+
+[[nodiscard]] uint32_t hwi::getUniqueID() {
+  uint32_t result = 0U;
+  if (g_pTestInstance != nullptr) {
+    result = g_pTestInstance->getUniqueID();
+  }
+
+  return result;
 }
 
 [[nodiscard]] uint32_t hwi::calculateCRC(const uint8_t* data_ptr, uint32_t byte_size) {
@@ -116,4 +164,136 @@ void hwi::startApp(uint32_t app_flash_address) {
 
 // Tests --------------------------------------------------------------------------------------------------------------
 
-TEST_F(DeviceInfoTests, Init) { EXPECT_EQ(true, false) << "Implement tests!"; }
+TEST_F(DeviceInfoTests, BootloaderVersion) {
+  constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_BOOTLOADER_VERSION;
+  constexpr uint8_t PACKET_ID = 0;
+  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::MsgData EXPECTED_DATA = {version::VERSION[0], version::VERSION[1], version::VERSION[2], 0};
+
+  /* Create request */
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+
+  /* Process request and get response */
+  getHandler().processRequest(request_msg);
+  const auto response = getHandler().getResponse();
+
+  /* Check response */
+  EXPECT_EQ(response.request, REQUEST);
+  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  for (auto idx = 0U; idx < response.data.size(); idx++) {
+    EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
+  }
+}
+
+TEST_F(DeviceInfoTests, BootloaderCRC) {
+  constexpr uint32_t CRC_VALUE = 0x1AC0BAAF;
+  constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_BOOTLOADER_CRC;
+  constexpr uint8_t PACKET_ID = 0;
+  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::MsgData EXPECTED_DATA = {
+      static_cast<uint8_t>(CRC_VALUE),
+      static_cast<uint8_t>(CRC_VALUE >> 8U),
+      static_cast<uint8_t>(CRC_VALUE >> 16U),
+      static_cast<uint8_t>(CRC_VALUE >> 24U),
+  };
+
+  this->setCRCResult(CRC_VALUE);
+
+  /* Create request */
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+
+  /* Process request and get response */
+  getHandler().processRequest(request_msg);
+  const auto response = getHandler().getResponse();
+
+  /* Check response */
+  EXPECT_EQ(response.request, REQUEST);
+  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  for (auto idx = 0U; idx < response.data.size(); idx++) {
+    EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
+  }
+}
+
+TEST_F(DeviceInfoTests, VendorID) {
+  constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_VID;
+  constexpr uint8_t PACKET_ID = 0;
+  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+
+  /* Create request */
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+
+  /* Process request and get response */
+  getHandler().processRequest(request_msg);
+  const auto response = getHandler().getResponse();
+
+  /* Check response */
+  EXPECT_EQ(response.request, REQUEST);
+  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  for (auto idx = 0U; idx < response.data.size(); idx++) {
+    const auto expected_val = static_cast<uint8_t>(this->getVendorID() >> (8U * idx));
+    EXPECT_EQ(response.data.at(idx), expected_val);
+  }
+}
+
+TEST_F(DeviceInfoTests, ProductID) {
+  constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_PID;
+  constexpr uint8_t PACKET_ID = 0;
+  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+
+  /* Create request */
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+
+  /* Process request and get response */
+  getHandler().processRequest(request_msg);
+  const auto response = getHandler().getResponse();
+
+  /* Check response */
+  EXPECT_EQ(response.request, REQUEST);
+  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  for (auto idx = 0U; idx < response.data.size(); idx++) {
+    const auto expected_val = static_cast<uint8_t>(this->getProductID() >> (8U * idx));
+    EXPECT_EQ(response.data.at(idx), expected_val);
+  }
+}
+
+TEST_F(DeviceInfoTests, ProductionDate) {
+  constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_PRD;
+  constexpr uint8_t PACKET_ID = 0;
+  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+
+  /* Create request */
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+
+  /* Process request and get response */
+  getHandler().processRequest(request_msg);
+  const auto response = getHandler().getResponse();
+
+  /* Check response */
+  EXPECT_EQ(response.request, REQUEST);
+  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  for (auto idx = 0U; idx < response.data.size(); idx++) {
+    const auto expected_val = static_cast<uint8_t>(this->getProductionDate() >> (8U * idx));
+    EXPECT_EQ(response.data.at(idx), expected_val);
+  }
+}
+
+TEST_F(DeviceInfoTests, UniqueID) {
+  constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_UID;
+  constexpr uint8_t PACKET_ID = 0;
+  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+
+  /* Create request */
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+
+  /* Process request and get response */
+  getHandler().processRequest(request_msg);
+  const auto response = getHandler().getResponse();
+
+  /* Check response */
+  EXPECT_EQ(response.request, REQUEST);
+  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  for (auto idx = 0U; idx < response.data.size(); idx++) {
+    const auto expected_val = static_cast<uint8_t>(this->getUniqueID() >> (8U * idx));
+    EXPECT_EQ(response.data.at(idx), expected_val);
+  }
+}

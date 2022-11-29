@@ -7,14 +7,14 @@ The following table shows the supported request types. To get detailed informati
 |---------------------------------------|----------|------------------------------------------------------------------|-------------|--------|
 | REQ_PING                              | 0x0001   | Network search via sync for multi device networks                | yes         | yes    |
 | REQ_RESET_DEVICE                      | 0x0011   | Resets the device                                                | yes         | yes    |
-| REQ_START_APP                         | 0x0012   | Starts the application                                           | yes         | yes     |
+| REQ_START_APP                         | 0x0012   | Starts the application                                           | yes         | yes    |
 | **Device Information**                |
-| REQ_DEV_INFO_BOOTLOADER_VERSION       | 0x0101   | Reads the used version of the bootloader                         | no          | no     |
-| REQ_DEV_INFO_BOOTLOADER_CRC           | 0x0102   | Reads the CRC value of the bootloader (calculated)               | no          | no     |
-| REQ_DEV_INFO_VID                      | 0x0103   | Reads the vendor ID                                              | no          | no     |
-| REQ_DEV_INFO_PID                      | 0x0104   | Reads the product ID                                             | no          | no     |
-| REQ_DEV_INFO_PRD                      | 0x0105   | Reads the production date of the device                          | no          | no     |
-| REQ_DEV_INFO_UID                      | 0x0106   | Reads the unique ID of the device                                | no          | no     |
+| REQ_DEV_INFO_BOOTLOADER_VERSION       | 0x0101   | Reads the used version of the bootloader                         | yes         | yes    |
+| REQ_DEV_INFO_BOOTLOADER_CRC           | 0x0102   | Reads the CRC value of the bootloader (calculated)               | yes         | yes    |
+| REQ_DEV_INFO_VID                      | 0x0103   | Reads the vendor ID                                              | yes         | yes    |
+| REQ_DEV_INFO_PID                      | 0x0104   | Reads the product ID                                             | yes         | yes    |
+| REQ_DEV_INFO_PRD                      | 0x0105   | Reads the production date of the device                          | yes         | yes    |
+| REQ_DEV_INFO_UID                      | 0x0106   | Reads the unique ID of the device                                | yes         | yes    |
 | **Flash Information**                 |
 | REQ_FLASH_INFO_START_ADDR             | 0x0201   | Reads the start address of the flash e.g. (0x08000000) for STM   | no          | no     |
 | REQ_FLASH_INFO_PAGE_SIZE              | 0x0202   | Reads the page size of the flash                                 | no          | no     |

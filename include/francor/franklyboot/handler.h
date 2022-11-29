@@ -89,6 +89,13 @@ class Handler {
   void handleReqResetDevice();
   void handleReqStartApp(const msg::Msg& request);
 
+  void handleReqInfoBootloaderVer();
+  void handleReqInfoBootloaderCRC();
+  void handleReqInfoVendorID();
+  void handleReqInfoProductID();
+  void handleReqInfoProductionDate();
+  void handleReqInfoUniqueID();
+
   [[nodiscard]] bool isAppCRCValid() const;
 
   /** \brief Command buffer for commands which cannot be processed immediatly */

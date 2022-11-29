@@ -91,6 +91,11 @@ void hwi::resetDevice() {
   }
 }
 
+[[nodiscard]] uint32_t hwi::getVendorID() { return 0; }
+[[nodiscard]] uint32_t hwi::getProductID() { return 0; }
+[[nodiscard]] uint32_t hwi::getProductionDate() { return 0; }
+[[nodiscard]] uint32_t hwi::getUniqueID() { return 0; }
+
 [[nodiscard]] uint32_t hwi::calculateCRC(const uint8_t* data_ptr, uint32_t byte_size) {
   uint32_t result = 0;
   if (g_pTestInstance != nullptr) {
