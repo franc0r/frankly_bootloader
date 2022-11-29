@@ -29,11 +29,11 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processBufferedCmds() {
     case CommandBuffer::NONE:
       break;
     case CommandBuffer::RESET_DEVICE:
-      franklyboot::hwi::resetDevice();
+      hwi::resetDevice();
       break;
     case CommandBuffer::START_APP:
       const uint32_t app_flash_address = FLASH_START + FLASH_PAGE_SIZE * FLASH_APP_FIRST_PAGE;
-      franklyboot::hwi::startApp(app_flash_address);
+      hwi::startApp(app_flash_address);
       break;
   }
 
@@ -93,8 +93,7 @@ FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqStartApp(const msg::Msg& request) {
   constexpr uint32_t START_APP_UNSAFE_WORD = 0xFFFFFFFFU;
 
-  this->_response.request = msg::REQ_START_APP;
-  this->_response.data = msg::MsgData({0});
+  this->_response = msg::Msg(msg::REQ_START_APP, msg::RESP_ERR, 0);
 
   const bool start_app_safe = (msg::convertMsgDataToU32(request.data) != START_APP_UNSAFE_WORD);
   if (start_app_safe) {
@@ -113,7 +112,22 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqStartApp(const msg::Msg& request
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
-[[nodiscard]] bool FRANKLYBOOT_HANDLER_TEMPL_PREFIX::isAppCRCValid() const { return false; }
+[[nodiscard]] bool FRANKLYBOOT_HANDLER_TEMPL_PREFIX::isAppCRCValid() const {
+  constexpr uint32_t NUM_BITS_PER_BYTE = 8U;
+
+  /* Read CRC value from flash */
+  uint32_t crc_value_stored = 0U;
+  for (auto idx = 0U; idx < sizeof(uint32_t); idx++) {
+    crc_value_stored |=
+        static_cast<uint32_t>(hwi::readByteFromFlash(FLASH_APP_CRC_VALUE_ADDRESS + idx) << (idx * NUM_BITS_PER_BYTE));
+  }
+
+  /* Calculate CRC value */
+  const uint8_t* app_flash_ptr = (uint8_t*)(FLASH_APP_ADDRESS);
+  const uint32_t crc_value_calc = hwi::calculateCRC(app_flash_ptr, (FLASH_APP_NUM_PAGES * FLASH_PAGE_SIZE));
+
+  return (crc_value_stored == crc_value_calc);
+}
 
 }; /* namespace franklyboot */
 

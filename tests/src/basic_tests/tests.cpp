@@ -38,6 +38,8 @@ TEST(BasicTests, checkFlashInfoGetFuncions)  // NOLINT
   constexpr uint32_t FLASH_NUM_PAGES = 16;
   constexpr uint32_t FLASH_SIZE = FLASH_NUM_PAGES * FLASH_PAGE_SIZE;
   constexpr uint32_t FLASH_APP_NUM_PAGES = 14;
+  constexpr uint32_t FLASH_APP_ADDRESS = FLASH_START + FLASH_APP_FIRST_PAGE * FLASH_PAGE_SIZE;
+  constexpr uint32_t FLASH_APP_CRC_VALUE_ADDRESS = {FLASH_START + FLASH_SIZE - 4U};
 
   franklyboot::Handler<FLASH_START, FLASH_APP_FIRST_PAGE, FLASH_SIZE, FLASH_PAGE_SIZE> handler;
 
@@ -46,7 +48,9 @@ TEST(BasicTests, checkFlashInfoGetFuncions)  // NOLINT
   EXPECT_EQ(handler.getFlashPageSize(), FLASH_PAGE_SIZE);
   EXPECT_EQ(handler.getFlashSize(), FLASH_SIZE);
   EXPECT_EQ(handler.getFlashNumPages(), FLASH_NUM_PAGES);
+  EXPECT_EQ(handler.getFlashAppAddress(), FLASH_APP_ADDRESS);
   EXPECT_EQ(handler.getFlashAppNumPages(), FLASH_APP_NUM_PAGES);
+  EXPECT_EQ(handler.getFlashAppCRCValueAddress(), FLASH_APP_CRC_VALUE_ADDRESS);
 }
 
 /**

@@ -80,7 +80,9 @@ class Handler {
   [[nodiscard]] auto getFlashPageSize() const { return FLASH_PAGE_SIZE; }
   [[nodiscard]] auto getFlashNumPages() const { return FLASH_NUM_PAGES; }
   [[nodiscard]] auto getFlashAppFirstPage() const { return FLASH_APP_FIRST_PAGE; }
+  [[nodiscard]] auto getFlashAppAddress() const { return FLASH_APP_ADDRESS; }
   [[nodiscard]] auto getFlashAppNumPages() const { return FLASH_APP_NUM_PAGES; }
+  [[nodiscard]] auto getFlashAppCRCValueAddress() const { return FLASH_APP_CRC_VALUE_ADDRESS; }
 
  private:
   void handleReqPing();
@@ -103,8 +105,14 @@ class Handler {
   /** \brief Number of flash pages */
   static constexpr uint32_t FLASH_NUM_PAGES = {FLASH_SIZE / FLASH_PAGE_SIZE};
 
+  /** \brief App start address in flash */
+  static constexpr uint32_t FLASH_APP_ADDRESS = {FLASH_START + FLASH_APP_FIRST_PAGE * FLASH_PAGE_SIZE};
+
   /** \brief Number of application flash pages */
   static constexpr uint32_t FLASH_APP_NUM_PAGES = {FLASH_NUM_PAGES - FLASH_APP_FIRST_PAGE};
+
+  /** \brief Location of CRC value */
+  static constexpr uint32_t FLASH_APP_CRC_VALUE_ADDRESS = {FLASH_START + FLASH_SIZE - 4U};
 
   /* STATIC ASSERT TESTS */
   static_assert(FLASH_SIZE > 0, "FLASH_SIZE cannot be 0!");

@@ -63,7 +63,8 @@ using MsgData = std::array<uint8_t, 4U>;
  */
 struct Msg {
   Msg() = default;
-  Msg(RequestType req, ResponseType resp, uint8_t packet_id) : request(req), response(resp), packet_id(packet_id) {}
+  Msg(RequestType req, ResponseType resp, uint8_t packet_id)
+      : request(req), response(resp), packet_id(packet_id), data({0}) {}
 
   RequestType request;
   ResponseType response;
