@@ -12,6 +12,7 @@ Reads the vendor ID of the device
 |Response|REQ_DEV_INFO_VID|RESP_ACK|0|VID_0|VID_1|VID_2|VID_3|
 
 *Data encoding*
+
 u32 = (VID_0) | (VID_1 << 8) | (VID_2 << 16) | (VID_3 << 24)
 
 ## Errors

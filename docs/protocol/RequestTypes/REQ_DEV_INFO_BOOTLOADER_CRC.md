@@ -12,6 +12,7 @@ Calculates the CRC of the bootloader flash area and returns it in the response
 |Response|REQ_DEV_INFO_BOOTLOADER_CRC|RESP_ACK|0|CRC_0|CRC_1|CRC_2|CRC_3|
 
 *Data encoding*
+
 u32 = (CRC_0) | (CRC_1 << 8) | (CRC_2 << 16) | (CRC_3 << 24)
 
 ## Errors

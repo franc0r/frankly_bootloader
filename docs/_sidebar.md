@@ -10,6 +10,9 @@
     * [REQ_DEV_INFO_BOOTLOADER_CRC](./protocol/RequestTypes/REQ_DEV_INFO_BOOTLOADER_CRC.md)
     * [REQ_DEV_INFO_VID](./protocol/RequestTypes/REQ_DEV_INFO_VID.md)
     * [REQ_DEV_INFO_PID](./protocol/RequestTypes/REQ_DEV_INFO_PID.md)
+    * [REQ_DEV_INFO_PRD](./protocol/RequestTypes/REQ_DEV_INFO_PRD.md)
+    * [REQ_DEV_INFO_UID](./protocol/RequestTypes/REQ_DEV_INFO_UID.md)
+
 
 
 
