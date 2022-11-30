@@ -62,6 +62,16 @@ enum RequestType : uint16_t {
   REQ_DEV_INFO_PRD = 0x0105U,                 //!< Reads the production date
   REQ_DEV_INFO_UID = 0x0106U,                 //!< Reads the device unique ID
 
+  /* Flash information */
+  REQ_FLASH_INFO_START_ADDR = 0x0201U,  //!< Get the start address of the flash area
+  REQ_FLASH_INFO_PAGE_SIZE = 0x0202U,   //!< Get the size in bytes of a page
+  REQ_FLASH_INFO_NUM_PAGES = 0x0203U,   //!< Get the number of pages (including bootloader area)
+
+  /* App Information */
+  REQ_APP_INFO_PAGE_IDX = 0x0301U,  //!< Get the page idx of app area in flash
+  REQ_APP_INFO_CRC_CALC = 0x0302U,  //!< Get the calculate CRC over app flash area
+  REQ_APP_INFO_CRC_STRD = 0x0303U,  //!< Get the stored CRC value used for safe startup
+
 };
 
 /** \brief Definition of the MsgData representation */

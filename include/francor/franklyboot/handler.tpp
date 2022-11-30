@@ -83,6 +83,30 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processRequest(const msg::Msg& msg) {
       handleReqInfoUniqueID();
       break;
 
+    case msg::REQ_FLASH_INFO_START_ADDR:
+      handleReqFlashStartAddress();
+      break;
+
+    case msg::REQ_FLASH_INFO_PAGE_SIZE:
+      handleReqFlashPageSize();
+      break;
+
+    case msg::REQ_FLASH_INFO_NUM_PAGES:
+      handleReqFlashNumPages();
+      break;
+
+    case msg::REQ_APP_INFO_PAGE_IDX:
+      handleReqAppPageIdx();
+      break;
+
+    case msg::REQ_APP_INFO_CRC_CALC:
+      handleReqAppCrcCalc();
+      break;
+
+    case msg::REQ_APP_INFO_CRC_STRD:
+      handleReqAppCrcStrd();
+      break;
+
     default:
       this->_response.response = msg::RESP_UNKNOWN_REQ;
       break;
@@ -176,8 +200,55 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoUniqueID() {
   this->_response = msg::Msg(msg::REQ_DEV_INFO_UID, msg::RESP_ACK, 0);
   msg::convertU32ToMsgData(hwi::getUniqueID(), this->_response.data);
 }
+
 FRANKLYBOOT_HANDLER_TEMPL
-[[nodiscard]] bool FRANKLYBOOT_HANDLER_TEMPL_PREFIX::isAppCRCValid() const {
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashStartAddress() {
+  this->_response = msg::Msg(msg::REQ_FLASH_INFO_START_ADDR, msg::RESP_ACK, 0);
+  msg::convertU32ToMsgData(FLASH_START, this->_response.data);
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashPageSize() {
+  this->_response = msg::Msg(msg::REQ_FLASH_INFO_PAGE_SIZE, msg::RESP_ACK, 0);
+  msg::convertU32ToMsgData(FLASH_PAGE_SIZE, this->_response.data);
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashNumPages() {
+  this->_response = msg::Msg(msg::REQ_FLASH_INFO_NUM_PAGES, msg::RESP_ACK, 0);
+  msg::convertU32ToMsgData(FLASH_NUM_PAGES, this->_response.data);
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqAppPageIdx() {
+  this->_response = msg::Msg(msg::REQ_APP_INFO_PAGE_IDX, msg::RESP_ACK, 0);
+  msg::convertU32ToMsgData(FLASH_APP_FIRST_PAGE, this->_response.data);
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqAppCrcCalc() {
+  uint32_t crc_value_calc = this->readAppCRCFromFlash();
+  this->_response = msg::Msg(msg::REQ_APP_INFO_CRC_CALC, msg::RESP_ACK, 0);
+  msg::convertU32ToMsgData(crc_value_calc, this->_response.data);
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqAppCrcStrd() {
+  uint32_t crc_value_stored = this->readAppCRCFromFlash();
+  this->_response = msg::Msg(msg::REQ_APP_INFO_CRC_STRD, msg::RESP_ACK, 0);
+  msg::convertU32ToMsgData(crc_value_stored, this->_response.data);
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+[[nodiscard]] uint32_t FRANKLYBOOT_HANDLER_TEMPL_PREFIX::calcAppCRC() const {
+  /* Calculate CRC value */
+  const uint8_t* app_flash_ptr = (uint8_t*)(FLASH_APP_ADDRESS);
+  const uint32_t crc_value_calc = hwi::calculateCRC(app_flash_ptr, (FLASH_APP_NUM_PAGES * FLASH_PAGE_SIZE));
+  return crc_value_calc;
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+[[nodiscard]] uint32_t FRANKLYBOOT_HANDLER_TEMPL_PREFIX::readAppCRCFromFlash() const {
   constexpr uint32_t NUM_BITS_PER_BYTE = 8U;
 
   /* Read CRC value from flash */
@@ -187,13 +258,19 @@ FRANKLYBOOT_HANDLER_TEMPL
         static_cast<uint32_t>(hwi::readByteFromFlash(FLASH_APP_CRC_VALUE_ADDRESS + idx) << (idx * NUM_BITS_PER_BYTE));
   }
 
+  return crc_value_stored;
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+[[nodiscard]] bool FRANKLYBOOT_HANDLER_TEMPL_PREFIX::isAppCRCValid() const {
+  /* Read CRC value from flash */
+  const uint32_t crc_value_stored = this->readAppCRCFromFlash();
+
   /* Calculate CRC value */
-  const uint8_t* app_flash_ptr = (uint8_t*)(FLASH_APP_ADDRESS);
-  const uint32_t crc_value_calc = hwi::calculateCRC(app_flash_ptr, (FLASH_APP_NUM_PAGES * FLASH_PAGE_SIZE));
+  const uint32_t crc_value_calc = this->calcAppCRC();
 
   return (crc_value_stored == crc_value_calc);
 }
-
 }; /* namespace franklyboot */
 
 #endif /* FRANCOR_FRANKLYBOOT_HANDLER_TPP_H_ */

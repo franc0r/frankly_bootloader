@@ -96,6 +96,16 @@ class Handler {
   void handleReqInfoProductionDate();
   void handleReqInfoUniqueID();
 
+  void handleReqFlashStartAddress();
+  void handleReqFlashPageSize();
+  void handleReqFlashNumPages();
+
+  void handleReqAppPageIdx();
+  void handleReqAppCrcCalc();
+  void handleReqAppCrcStrd();
+
+  [[nodiscard]] uint32_t calcAppCRC() const;
+  [[nodiscard]] uint32_t readAppCRCFromFlash() const;
   [[nodiscard]] bool isAppCRCValid() const;
 
   /** \brief Command buffer for commands which cannot be processed immediatly */
