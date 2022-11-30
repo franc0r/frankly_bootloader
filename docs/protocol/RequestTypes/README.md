@@ -20,9 +20,9 @@ The following table shows the supported request types. To get detailed informati
 | REQ_FLASH_INFO_PAGE_SIZE              | 0x0202   | Reads the page size of the flash                                   | yes         | yes    |
 | REQ_FLASH_INFO_NUM_PAGES              | 0x0203   | Reads the number of flash pages                                    | yes         | yes    |
 | **App Information**                   |  
-| REQ_APP_INFO_PAGE_IDX                 | 0x0301   | Reads the first page of the application flash                      | no          | no     |
-| REQ_APP_INFO_CRC_CALC                 | 0x0302   | Calculate CRC of application flash                                 | no          | no     |
-| REQ_APP_INFO_CRC_STRD                 | 0x0303   | Reads the stored CRC value in application flash                    | no          | no     |
+| REQ_APP_INFO_PAGE_IDX                 | 0x0301   | Reads the first page of the application flash                      | yes         | yes    |
+| REQ_APP_INFO_CRC_CALC                 | 0x0302   | Calculate CRC of application flash                                 | yes         | yes    |
+| REQ_APP_INFO_CRC_STRD                 | 0x0303   | Reads the stored CRC value in application flash                    | yes         | yes    |
 | **Flash Read Commands**               |  
 | REQ_FLASH_READ_WORD                   | 0x0401   | Read a word from flash at desired address                          | no          | no     |
 | **Page Buffer Commands**              |  

@@ -15,6 +15,10 @@
     * [REQ_FLASH_INFO_START_ADDR](./protocol/RequestTypes/REQ_FLASH_INFO_START_ADDR.md)
     * [REQ_FLASH_INFO_PAGE_SIZE](./protocol/RequestTypes/REQ_FLASH_INFO_PAGE_SIZE.md)
     * [REQ_FLASH_INFO_NUM_PAGES](./protocol/RequestTypes/REQ_FLASH_INFO_NUM_PAGES.md)
+    * [REQ_APP_INFO_PAGE_IDX](./protocol/RequestTypes/REQ_APP_INFO_PAGE_IDX.md)
+    * [REQ_APP_INFO_CRC_CALC](./protocol/RequestTypes/REQ_APP_INFO_CRC_CALC.md)
+    * [REQ_APP_INFO_CRC_STRD](./protocol/RequestTypes/REQ_APP_INFO_CRC_STRD.md)
+
 
   * [Response Types](./protocol/ResponseTypes.md)
 
