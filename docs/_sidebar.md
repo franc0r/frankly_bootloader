@@ -12,10 +12,9 @@
     * [REQ_DEV_INFO_PID](./protocol/RequestTypes/REQ_DEV_INFO_PID.md)
     * [REQ_DEV_INFO_PRD](./protocol/RequestTypes/REQ_DEV_INFO_PRD.md)
     * [REQ_DEV_INFO_UID](./protocol/RequestTypes/REQ_DEV_INFO_UID.md)
-
-
-
-
+    * [REQ_FLASH_INFO_START_ADDR](./protocol/RequestTypes/REQ_FLASH_INFO_START_ADDR.md)
+    * [REQ_FLASH_INFO_PAGE_SIZE](./protocol/RequestTypes/REQ_FLASH_INFO_PAGE_SIZE.md)
+    * [REQ_FLASH_INFO_NUM_PAGES](./protocol/RequestTypes/REQ_FLASH_INFO_NUM_PAGES.md)
 
   * [Response Types](./protocol/ResponseTypes.md)
 

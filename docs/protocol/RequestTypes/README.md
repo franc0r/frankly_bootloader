@@ -16,13 +16,13 @@ The following table shows the supported request types. To get detailed informati
 | REQ_DEV_INFO_PRD                      | 0x0105   | Reads the production date of the device (seconds since 1.12.2022)  | yes         | yes    |
 | REQ_DEV_INFO_UID                      | 0x0106   | Reads the unique ID of the device                                  | yes         | yes    |
 | **Flash Information**                 |  
-| REQ_FLASH_INFO_START_ADDR             | 0x0201   | Reads the start address of the flash e.g. (0x08000000) for STM     | no          | no     |
-| REQ_FLASH_INFO_PAGE_SIZE              | 0x0202   | Reads the page size of the flash                                   | no          | no     |
-| REQ_FLASH_INFO_NUM_PAGES              | 0x0203   | Reads the number of flash pages                                    | no          | no     |
+| REQ_FLASH_INFO_START_ADDR             | 0x0201   | Reads the start address of the flash e.g. (0x08000000) for STM     | yes         | yes    |
+| REQ_FLASH_INFO_PAGE_SIZE              | 0x0202   | Reads the page size of the flash                                   | yes         | yes    |
+| REQ_FLASH_INFO_NUM_PAGES              | 0x0203   | Reads the number of flash pages                                    | yes         | yes    |
 | **App Information**                   |  
-| REQ_APP_INFO_PAGE_START_IDX           | 0x0301   | Reads the first page of the application flash                      | no          | no     |
-| REQ_APP_INFO_CALC_CRC                 | 0x0302   | Calculate CRC of application flash                                 | no          | no     |
-| REQ_APP_INFO_FLASH_CRC                | 0x0303   | Reads the stored CRC value in application flash                    | no          | no     |
+| REQ_APP_INFO_PAGE_IDX                 | 0x0301   | Reads the first page of the application flash                      | no          | no     |
+| REQ_APP_INFO_CRC_CALC                 | 0x0302   | Calculate CRC of application flash                                 | no          | no     |
+| REQ_APP_INFO_CRC_STRD                 | 0x0303   | Reads the stored CRC value in application flash                    | no          | no     |
 | **Flash Read Commands**               |  
 | REQ_FLASH_READ_WORD                   | 0x0401   | Read a word from flash at desired address                          | no          | no     |
 | **Page Buffer Commands**              |  
