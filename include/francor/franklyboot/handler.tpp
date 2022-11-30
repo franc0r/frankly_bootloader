@@ -169,7 +169,7 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoBootloaderVer() {
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoBootloaderCRC() {
-  const uint8_t* bootl_start_addr = (uint8_t*)(FLASH_START);
+  const uint32_t bootl_start_addr = FLASH_START;
   const uint32_t bootl_size = FLASH_APP_FIRST_PAGE * FLASH_PAGE_SIZE;
   const uint32_t crc_value = hwi::calculateCRC(bootl_start_addr, bootl_size);
 
@@ -242,7 +242,7 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqAppCrcStrd() {
 FRANKLYBOOT_HANDLER_TEMPL
 [[nodiscard]] uint32_t FRANKLYBOOT_HANDLER_TEMPL_PREFIX::calcAppCRC() const {
   /* Calculate CRC value */
-  const uint8_t* app_flash_ptr = (uint8_t*)(FLASH_APP_ADDRESS);
+  const uint32_t app_flash_ptr = FLASH_APP_ADDRESS;
   const uint32_t crc_value_calc = hwi::calculateCRC(app_flash_ptr, (FLASH_APP_NUM_PAGES * FLASH_PAGE_SIZE));
   return crc_value_calc;
 }
