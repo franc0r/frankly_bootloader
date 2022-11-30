@@ -51,6 +51,8 @@ class TestHelper : public ::testing::Test {
   /** \brief Check functions */
   [[nodiscard]] bool resetDeviceCalled() const;
   [[nodiscard]] bool startAppCalled() const;
+  [[nodiscard]] uint32_t getCalcCRCSrcAddress() const;
+  [[nodiscard]] uint32_t getCalcCRCNumBytes() const;
 
   /* Hardware interface simulation -> called by hwi:: functions */
   void resetDevice();
@@ -58,10 +60,9 @@ class TestHelper : public ::testing::Test {
   [[nodiscard]] uint32_t getProductID() const;
   [[nodiscard]] uint32_t getProductionDate() const;
   [[nodiscard]] uint32_t getUniqueID() const;
-  [[nodiscard]] uint32_t calculateCRC(const uint8_t* data_ptr, uint32_t byte_size);  // NOLINT
+  [[nodiscard]] uint32_t calculateCRC(const uint32_t src_address, uint32_t num_bytes);  // NOLINT
   bool eraseFlashPage(uint32_t page_id);
-  bool writeDataBufferToFlash(uint32_t dst_address, uint32_t dst_page_id, const uint8_t* src_data_ptr,
-                              uint32_t byte_size);
+  bool writeDataBufferToFlash(uint32_t dst_address, uint32_t dst_page_id, uint32_t src_address, uint32_t num_bytes);
   [[nodiscard]] uint8_t readByteFromFlash(uint32_t flash_src_address);
   void startApp(uint32_t app_flash_address);
 
@@ -75,7 +76,10 @@ class TestHelper : public ::testing::Test {
   uint32_t _product_id = {0U};
   uint32_t _production_date = {0U};
   uint32_t _unique_id = {0U};
-  uint32_t _calculated_crc = {0U};
+
+  uint32_t _crc_calc_src_address = {0U};
+  uint32_t _crc_calc_num_bytes = {0U};
+  uint32_t _crc_calc_result = {0U};
 
   bool _startAppCalled = {false};
 

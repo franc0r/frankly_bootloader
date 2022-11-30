@@ -49,6 +49,8 @@ TEST_F(DeviceInfoTests, BootloaderVersion) {
 }
 
 TEST_F(DeviceInfoTests, BootloaderCRC) {
+  constexpr uint32_t EXPECTED_CRC_SRC_ADDRESS = FLASH_START;
+  constexpr uint32_t EXPECTED_CRC_NUM_BYTES = FLASH_APP_FIRST_PAGE * FLASH_PAGE_SIZE;
   constexpr uint32_t CRC_VALUE = 0x1AC0BAAF;
   constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_BOOTLOADER_CRC;
   constexpr uint8_t PACKET_ID = 0;
@@ -75,6 +77,8 @@ TEST_F(DeviceInfoTests, BootloaderCRC) {
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
   }
+  EXPECT_EQ(this->getCalcCRCSrcAddress(), EXPECTED_CRC_SRC_ADDRESS);
+  EXPECT_EQ(this->getCalcCRCNumBytes(), EXPECTED_CRC_NUM_BYTES);
 }
 
 TEST_F(DeviceInfoTests, VendorID) {

@@ -37,7 +37,7 @@ void TestHelper::setVendorID(uint32_t value) { _vendor_id = value; }
 void TestHelper::setProductID(uint32_t value) { _product_id = value; }
 void TestHelper::setProductionDate(uint32_t value) { _production_date = value; }
 void TestHelper::setUniqueID(uint32_t value) { _unique_id = value; }
-void TestHelper::setCRCResult(uint32_t value) { _calculated_crc = value; }
+void TestHelper::setCRCResult(uint32_t value) { _crc_calc_result = value; }
 
 void TestHelper::setByteInFlash(uint32_t address, uint8_t value) {
   if (auto search = _flash_simulation.find(address); search != _flash_simulation.end()) {
@@ -49,6 +49,8 @@ void TestHelper::setByteInFlash(uint32_t address, uint8_t value) {
 
 [[nodiscard]] bool TestHelper::resetDeviceCalled() const { return _resetDeviceCalled; }
 [[nodiscard]] bool TestHelper::startAppCalled() const { return _startAppCalled; }
+[[nodiscard]] uint32_t TestHelper::getCalcCRCSrcAddress() const { return _crc_calc_src_address; }
+[[nodiscard]] uint32_t TestHelper::getCalcCRCNumBytes() const { return _crc_calc_num_bytes; }
 
 // HWI abstraction ----------------------------------------------------------------------------------------------------
 
@@ -57,23 +59,23 @@ void TestHelper::resetDevice() { _resetDeviceCalled = true; }
 [[nodiscard]] uint32_t TestHelper::getProductID() const { return _product_id; }
 [[nodiscard]] uint32_t TestHelper::getProductionDate() const { return _production_date; }
 [[nodiscard]] uint32_t TestHelper::getUniqueID() const { return _unique_id; }
-[[nodiscard]] uint32_t TestHelper::calculateCRC(const uint8_t* data_ptr, uint32_t byte_size) {
-  (void)data_ptr;
-  (void)byte_size;
-  return _calculated_crc;
+[[nodiscard]] uint32_t TestHelper::calculateCRC(const uint32_t src_address, const uint32_t num_bytes) {
+  _crc_calc_src_address = src_address;
+  _crc_calc_num_bytes = num_bytes;
+  return _crc_calc_result;
 }
 
-[[nodiscard]] bool TestHelper::eraseFlashPage(uint32_t page_id) {
+[[nodiscard]] bool TestHelper::eraseFlashPage(const uint32_t page_id) {
   (void)page_id;
   return false;
 }
 
-bool TestHelper::writeDataBufferToFlash(uint32_t dst_address, uint32_t dst_page_id, const uint8_t* src_data_ptr,
-                                        uint32_t byte_size) {
+bool TestHelper::writeDataBufferToFlash(const uint32_t dst_address, const uint32_t dst_page_id,
+                                        const uint32_t src_address, const uint32_t num_bytes) {
   (void)dst_address;
   (void)dst_page_id;
-  (void)src_data_ptr;
-  (void)byte_size;
+  (void)src_address;
+  (void)num_bytes;
   return false;
 }
 
@@ -149,10 +151,10 @@ void hwi::resetDevice() {
   return value;
 }
 
-[[nodiscard]] uint32_t hwi::calculateCRC(const uint8_t* data_ptr, uint32_t byte_size) {
+[[nodiscard]] uint32_t hwi::calculateCRC(const uint32_t src_address, const uint32_t num_bytes) {
   uint32_t value = 0U;
   if (test_utils::testInstance != nullptr) {
-    value = test_utils::testInstance->calculateCRC(data_ptr, byte_size);
+    value = test_utils::testInstance->calculateCRC(src_address, num_bytes);
   }
 
   return value;
@@ -167,11 +169,11 @@ void hwi::resetDevice() {
   return value;
 }
 
-bool hwi::writeDataBufferToFlash(uint32_t dst_address, uint32_t dst_page_id, const uint8_t* src_data_ptr,
-                                 uint32_t byte_size) {
+bool hwi::writeDataBufferToFlash(const uint32_t dst_address, const uint32_t dst_page_id, const uint32_t src_address,
+                                 const uint32_t num_bytes) {
   bool value = false;
   if (test_utils::testInstance != nullptr) {
-    value = test_utils::testInstance->writeDataBufferToFlash(dst_address, dst_page_id, src_data_ptr, byte_size);
+    value = test_utils::testInstance->writeDataBufferToFlash(dst_address, dst_page_id, src_address, num_bytes);
   }
 
   return value;

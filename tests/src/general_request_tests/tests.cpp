@@ -146,6 +146,7 @@ TEST_F(GeneralRequestTests, ReqStartAppCRCInvalid) {
 }
 
 TEST_F(GeneralRequestTests, ReqStartAppCRCValid) {
+  constexpr uint32_t NUM_BITS_PER_BYTE = 8U;
   constexpr uint32_t CRC_VALUE = 0xDEADBEEF;
   constexpr msg::RequestType REQUEST = msg::REQ_START_APP;
   constexpr uint8_t PACKET_ID = 0;
@@ -155,7 +156,7 @@ TEST_F(GeneralRequestTests, ReqStartAppCRCValid) {
   /* Add CRC value to flash */
   const uint32_t crc_flash_address = FLASH_START + FLASH_SIZE - 4U;
   for (auto idx = 0U; idx < sizeof(uint32_t); idx++) {
-    this->setByteInFlash(crc_flash_address + idx, static_cast<uint8_t>(CRC_VALUE >> (idx * 8U)));
+    this->setByteInFlash(crc_flash_address + idx, static_cast<uint8_t>(CRC_VALUE >> (idx * NUM_BITS_PER_BYTE)));
   }
   this->setCRCResult(CRC_VALUE);
 
