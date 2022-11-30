@@ -48,6 +48,10 @@ class TestHelper : public ::testing::Test {
 
   void setByteInFlash(uint32_t address, uint8_t value);
 
+  /** \brief Check functions */
+  [[nodiscard]] bool resetDeviceCalled() const;
+  [[nodiscard]] bool startAppCalled() const;
+
   /* Hardware interface simulation -> called by hwi:: functions */
   void resetDevice();
   [[nodiscard]] uint32_t getVendorID() const;

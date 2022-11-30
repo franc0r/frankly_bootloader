@@ -2,6 +2,9 @@ cmake_minimum_required (VERSION 3.7.2)
 
 find_package(GTest REQUIRED)
 
+# -- UNIT TEST LIBRARY --
+add_subdirectory(frankly_test_utils)
+
 # -- UNIT TESTS --
 add_subdirectory(src/basic_tests)
 add_subdirectory(src/general_request_tests)

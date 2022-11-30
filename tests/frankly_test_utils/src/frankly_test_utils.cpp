@@ -1,5 +1,5 @@
 /**
- * @file test_utils.cpp
+ * @file frankly_test_utils.cpp
  * @author Martin Bauernschmitt (martin.bauernschmitt@francor.de)
  * @brief Unit Tests of FRANCORs Frankly Bootloader - Test Utils
  * @version 0.1
@@ -44,6 +44,11 @@ void TestHelper::setByteInFlash(uint32_t address, uint8_t value) {
     search->second = value;
   }
 }
+
+// Check Functions ----------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool TestHelper::resetDeviceCalled() const { return _resetDeviceCalled; }
+[[nodiscard]] bool TestHelper::startAppCalled() const { return _startAppCalled; }
 
 // HWI abstraction ----------------------------------------------------------------------------------------------------
 
