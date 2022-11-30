@@ -5,7 +5,14 @@ find_package(GTest REQUIRED)
 # -- UNIT TESTS VALUE --
 add_executable(franklyboot-flash-info-tests
   tests.cpp
+  ../test_utils.cpp
 )
+
+
+target_include_directories(franklyboot-flash-info-tests
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../include/>
+)
+
 
 target_link_libraries(franklyboot-flash-info-tests
   PRIVATE GTest::GTest

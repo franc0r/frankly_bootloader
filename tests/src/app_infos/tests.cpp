@@ -21,7 +21,7 @@ using namespace franklyboot::test_utils;  // NOLINT
 /**
  * @brief Test class for simulation of device
  */
-class AppInfoTests : public test_utils::TestHelper {
+class AppInfoTests : public TestHelper {
  public:
   AppInfoTests() = default;
 };
