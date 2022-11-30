@@ -7,3 +7,5 @@ add_subdirectory(src/basic_tests)
 add_subdirectory(src/general_request_tests)
 add_subdirectory(src/device_infos)
 add_subdirectory(src/flash_infos)
+add_subdirectory(src/app_infos)
+

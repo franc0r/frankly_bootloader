@@ -227,7 +227,7 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqAppPageIdx() {
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqAppCrcCalc() {
-  uint32_t crc_value_calc = this->readAppCRCFromFlash();
+  uint32_t crc_value_calc = this->calcAppCRC();
   this->_response = msg::Msg(msg::REQ_APP_INFO_CRC_CALC, msg::RESP_ACK, 0);
   msg::convertU32ToMsgData(crc_value_calc, this->_response.data);
 }
