@@ -107,6 +107,8 @@ class Handler {
   void handleReqAppCrcCalc();
   void handleReqAppCrcStrd();
 
+  void handleReqFlashReadWord(const msg::Msg& request);
+
   void handleReqPageBufferClear();
   void handleReqPageBufferReadWord(const msg::Msg& request);
   void handleReqPageBufferWriteWord(const msg::Msg& request);

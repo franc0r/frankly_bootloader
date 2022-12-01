@@ -24,7 +24,7 @@ The following table shows the supported request types. To get detailed informati
 | REQ_APP_INFO_CRC_CALC                 | 0x0302   | Calculate CRC of application flash                                 | yes         | yes    |
 | REQ_APP_INFO_CRC_STRD                 | 0x0303   | Reads the stored CRC value in application flash                    | yes         | yes    |
 | **Flash Read Commands**               |  
-| REQ_FLASH_READ_WORD                   | 0x0401   | Read a word from flash at desired address                          | no          | no     |
+| REQ_FLASH_READ_WORD                   | 0x0401   | Read a word from flash at desired address                          | yes         | yes    |
 | **Page Buffer Commands**              |  
 | REQ_PAGE_BUFFER_CLEAR                 | 0x1001   | Clears the page buffer in RAM used for flashing                    | yes         | yes    |
 | REQ_PAGE_BUFFER_READ_WORD             | 0x1002   | Reads a word from the page buffer in RAM                           | yes         | yes    |

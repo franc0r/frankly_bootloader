@@ -350,7 +350,7 @@ TEST_F(PageBufferTests, PageBufferWriteToFlashInvldAddress) {  // NOLINT
 TEST_F(PageBufferTests, PageBufferWriteToFlashInvldAddress2) {  // NOLINT
   constexpr msg::RequestType REQUEST = msg::REQ_PAGE_BUFFER_WRITE_TO_FLASH;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR;
+  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR_INVLD_ARG;
   constexpr msg::MsgData EXPECTED_DATA = {0xFF, 0x00, 0x00, 0x00};
 
   /* Create request */
