@@ -88,10 +88,12 @@ class Handler {
   [[nodiscard]] auto getByteFromPageBuffer(uint32_t byte_idx) const;
 
  private:
+  /* General requests */
   void handleReqPing();
   void handleReqResetDevice();
   void handleReqStartApp(const msg::Msg& request);
 
+  /* Device information */
   void handleReqInfoBootloaderVer();
   void handleReqInfoBootloaderCRC();
   void handleReqInfoVendorID();
@@ -99,21 +101,29 @@ class Handler {
   void handleReqInfoProductionDate();
   void handleReqInfoUniqueID();
 
+  /* Flash information */
   void handleReqFlashStartAddress();
   void handleReqFlashPageSize();
   void handleReqFlashNumPages();
 
+  /* App Information */
   void handleReqAppPageIdx();
   void handleReqAppCrcCalc();
   void handleReqAppCrcStrd();
 
+  /* Flash Read commands */
   void handleReqFlashReadWord(const msg::Msg& request);
 
+  /* Page Buffer Commands */
   void handleReqPageBufferClear();
   void handleReqPageBufferReadWord(const msg::Msg& request);
   void handleReqPageBufferWriteWord(const msg::Msg& request);
   void handleReqPageBufferCalcCrc();
   void handleReqPageBufferWriteToFlash(const msg::Msg& request);
+
+  /* Flash Write Commands*/
+  void handleReqFlashWriteErasePage(const msg::Msg& request);
+  void handleReqFlashWriteAppCrc(const msg::Msg& request);
 
   [[nodiscard]] uint32_t getPageBufferAddress() const;
   [[nodiscard]] uint32_t calcAppCRC() const;

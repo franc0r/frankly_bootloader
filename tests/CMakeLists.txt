@@ -13,6 +13,8 @@ add_subdirectory(src/flash_infos)
 add_subdirectory(src/app_infos)
 add_subdirectory(src/page_buffer)
 add_subdirectory(src/flash_read)
+add_subdirectory(src/flash_write)
+
 
 
 

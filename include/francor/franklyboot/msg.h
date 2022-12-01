@@ -83,6 +83,10 @@ enum RequestType : uint16_t {
   REQ_PAGE_BUFFER_CALC_CRC = 0x1004U,        //!< Calculates the CRC over the page buffer
   REQ_PAGE_BUFFER_WRITE_TO_FLASH = 0x1005U,  //!< Write the page buffer to the desired flash page
 
+  /* Flash Write Commands*/
+  REQ_FLASH_WRITE_ERASE_PAGE = 0x1101U,  //!< Erases an flash page
+  REQ_FLASH_WRITE_APP_CRC = 0x1102U,     //!< Writes the CRC of the app to the flash
+
 };
 
 /** \brief Definition of the MsgData representation */

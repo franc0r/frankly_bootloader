@@ -139,6 +139,14 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processRequest(const msg::Msg& msg) {
       handleReqPageBufferWriteToFlash(msg);
       break;
 
+    case msg::REQ_FLASH_WRITE_ERASE_PAGE:
+      handleReqFlashWriteErasePage(msg);
+      break;
+
+    case msg::REQ_FLASH_WRITE_APP_CRC:
+      handleReqFlashWriteAppCrc(msg);
+      break;
+
     default:
       this->_response.response = msg::RESP_UNKNOWN_REQ;
       break;
@@ -306,8 +314,7 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashReadWord(const msg::Msg& re
   }
 }
 
-// Page Buffer Requests
-// --------------------------------------------------------------------------------------------------------------------
+// Page Buffer Requests -----------------------------------------------------------------------------------------------
 
 FRANKLYBOOT_HANDLER_TEMPL void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferClear() {
   this->_page_buffer.fill({std::numeric_limits<uint8_t>::max()});
@@ -382,20 +389,79 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferWriteToFlash(const msg
   const bool address_valid = (address >= FLASH_START && address < (FLASH_START + FLASH_SIZE));
 
   if (address_valid) {
-    uint32_t page_buffer_address = getPageBufferAddress();
+    const auto erase_result = hwi::eraseFlashPage(page_id);
 
-    const bool flash_ok = hwi::writeDataBufferToFlash(address, page_id, page_buffer_address, FLASH_PAGE_SIZE);
+    if (erase_result) {
+      uint32_t page_buffer_address = getPageBufferAddress();
+      const bool flash_result = hwi::writeDataBufferToFlash(address, page_id, page_buffer_address, FLASH_PAGE_SIZE);
 
-    if (flash_ok) {
-      this->_response.response = msg::RESP_ACK;
+      if (flash_result) {
+        this->_response.response = msg::RESP_ACK;
+      }
     }
   } else {
     this->_response.response = msg::RESP_ERR_INVLD_ARG;
   }
 }
 
-// Private utils functions
-// --------------------------------------------------------------------------------------------
+// Flash Write Commands -----------------------------------------------------------------------------------------------
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashWriteErasePage(const msg::Msg& request) {
+  this->_response = msg::Msg(msg::REQ_FLASH_WRITE_ERASE_PAGE, msg::RESP_ERR, request.packet_id);
+  this->_response.data = request.data;
+
+  const uint32_t page_id = msg::convertMsgDataToU32(request.data);
+
+  const bool page_id_valid = (page_id >= FLASH_APP_FIRST_PAGE) && (page_id < FLASH_NUM_PAGES);
+  if (page_id_valid) {
+    const auto erase_result = hwi::eraseFlashPage(page_id);
+    this->_response.response = (erase_result) ? msg::RESP_ACK : msg::RESP_ERR;
+  } else {
+    this->_response.response = msg::RESP_ERR_INVLD_ARG;
+  }
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashWriteAppCrc(const msg::Msg& request) {
+  this->_response = msg::Msg(msg::REQ_FLASH_WRITE_APP_CRC, msg::RESP_ERR, request.packet_id);
+
+  /* Read complete page to buffer */
+  const uint32_t page_id = FLASH_NUM_PAGES - 1U;
+  const uint32_t start_address = FLASH_START + page_id * FLASH_PAGE_SIZE;
+  uint32_t byte_address = start_address;
+  for (uint32_t byte_idx = 0U; byte_idx < FLASH_PAGE_SIZE; byte_idx++) {
+    this->_page_buffer[byte_idx] = hwi::readByteFromFlash(byte_address);
+    byte_address++;
+  }
+
+  /* Store CRC value to last word in page buffer */
+  this->_page_buffer[FLASH_PAGE_SIZE - 4U] = request.data[0];
+  this->_page_buffer[FLASH_PAGE_SIZE - 3U] = request.data[1];
+  this->_page_buffer[FLASH_PAGE_SIZE - 2U] = request.data[2];
+  this->_page_buffer[FLASH_PAGE_SIZE - 1U] = request.data[3];
+
+  /* Erase page */
+  const auto erase_result = hwi::eraseFlashPage(page_id);
+
+  if (erase_result) {
+    /* Write page to flash */
+    uint32_t page_buffer_address = getPageBufferAddress();
+    const bool flash_result = hwi::writeDataBufferToFlash(start_address, page_id, page_buffer_address, FLASH_PAGE_SIZE);
+
+    if (flash_result) {
+      this->_response.response = msg::RESP_ACK;
+    }
+  }
+
+  /* Read CRC value from flash */
+  this->_response.data[0U] = hwi::readByteFromFlash(FLASH_APP_CRC_VALUE_ADDRESS);
+  this->_response.data[1U] = hwi::readByteFromFlash(FLASH_APP_CRC_VALUE_ADDRESS + 1U);
+  this->_response.data[2U] = hwi::readByteFromFlash(FLASH_APP_CRC_VALUE_ADDRESS + 2U);
+  this->_response.data[3U] = hwi::readByteFromFlash(FLASH_APP_CRC_VALUE_ADDRESS + 3U);
+}
+
+// Private utils functions --------------------------------------------------------------------------------------------
 
 FRANKLYBOOT_HANDLER_TEMPL
 uint32_t FRANKLYBOOT_HANDLER_TEMPL_PREFIX::getPageBufferAddress() const {

@@ -45,7 +45,17 @@ void TestHelper::setByteInFlash(uint32_t address, uint8_t value) {
   }
 }
 
+[[nodiscard]] auto TestHelper::readByteFromFlash(uint32_t address) const {
+  uint8_t value = 0U;
+  if (auto search = _flash_simulation.find(address); search != _flash_simulation.end()) {
+    value = search->second;
+  }
+
+  return value;
+}
+
 void TestHelper::setWriteToFlashResult(bool result) { _write_to_flash_result = result; }
+void TestHelper::setErasePageResult(bool result) { _erase_page_result = result; }
 
 // Help Functions -----------------------------------------------------------------------------------------------------
 
@@ -62,6 +72,7 @@ void TestHelper::clearPageBuffer() {
 [[nodiscard]] uint32_t TestHelper::getCalcCRCSrcAddress() const { return _crc_calc_src_address; }
 [[nodiscard]] uint32_t TestHelper::getCalcCRCNumBytes() const { return _crc_calc_num_bytes; }
 [[nodiscard]] bool TestHelper::writeToFlashCalled() const { return _write_to_flash_called; }
+[[nodiscard]] bool TestHelper::erasePageCalled() const { return _erase_page_called; }
 
 // HWI abstraction ----------------------------------------------------------------------------------------------------
 
@@ -77,8 +88,14 @@ void TestHelper::resetDevice() { _resetDeviceCalled = true; }
 }
 
 [[nodiscard]] bool TestHelper::eraseFlashPage(const uint32_t page_id) {
-  (void)page_id;
-  return false;
+  const uint32_t page_address = FLASH_START + FLASH_PAGE_SIZE * page_id;
+
+  for (auto idx = 0U; idx < FLASH_PAGE_SIZE; idx++) {
+    setByteInFlash(page_address + idx, std::numeric_limits<uint8_t>::max());
+  }
+
+  _erase_page_called = true;
+  return _erase_page_result;
 }
 
 bool TestHelper::writeDataBufferToFlash(const uint32_t dst_address, const uint32_t dst_page_id,

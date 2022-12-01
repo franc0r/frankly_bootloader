@@ -31,7 +31,7 @@ The following table shows the supported request types. To get detailed informati
 | REQ_PAGE_BUFFER_WRITE_WORD            | 0x1003   | Writes a word to the page buffer in RAM                            | yes         | yes    |
 | REQ_PAGE_BUFFER_CALC_CRC              | 0x1004   | Calculates the CRC value for the page buffer                       | yes         | yes    |
 | REQ_PAGE_BUFFER_WRITE_TO_FLASH        | 0x1005   | Writes the complete page buffer to the flash                       | yes         | yes    |
-| **Write Commands**                    |  
-| REQ_WRITE_APP_ERASE                   | 0x1101   | Erase the flash area containing the app                            | no          | no     |
-| REQ_WRITE_APP_WRITE_CRC               | 0x1102   | Writes the desired CRC value to the flash for app checking         | no          | no     |
+| ** Flash Write Commands**                    |  
+| REQ_FLASH_WRITE_APP_CRC            | 0x1101   | Erase flash page                                                   | no          | no     |
+| REQ_WRITE_FLASH_APP_CRC               | 0x1102   | Writes the desired CRC value to the flash for app checking         | no          | no     |
   

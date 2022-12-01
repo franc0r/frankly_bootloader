@@ -375,6 +375,7 @@ TEST_F(PageBufferTests, PageBufferWriteToFlash) {  // NOLINT
   constexpr uint8_t PACKET_ID = 0;
   constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
   constexpr msg::MsgData EXPECTED_DATA = {0x04, 0x00, 0x00, 0x00};
+  setErasePageResult(true);
   setWriteToFlashResult(true);
 
   /* Create request */
