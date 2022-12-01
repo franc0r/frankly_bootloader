@@ -48,7 +48,10 @@ class TestHelper : public ::testing::Test {
 
   void setByteInFlash(uint32_t address, uint8_t value);
 
-  /** \brief Check functions */
+  /* Help functions */
+  void clearPageBuffer();
+
+  /* Check functions */
   [[nodiscard]] bool resetDeviceCalled() const;
   [[nodiscard]] bool startAppCalled() const;
   [[nodiscard]] uint32_t getCalcCRCSrcAddress() const;

@@ -45,6 +45,14 @@ void TestHelper::setByteInFlash(uint32_t address, uint8_t value) {
   }
 }
 
+// Help Functions -----------------------------------------------------------------------------------------------------
+
+void TestHelper::clearPageBuffer() {
+  const msg::Msg clear_request = msg::Msg(msg::REQ_PAGE_BUFFER_CLEAR, msg::RESP_NONE, 0);
+  this->_handle.processRequest(clear_request);
+  this->_handle.processBufferedCmds();
+}
+
 // Check Functions ----------------------------------------------------------------------------------------------------
 
 [[nodiscard]] bool TestHelper::resetDeviceCalled() const { return _resetDeviceCalled; }

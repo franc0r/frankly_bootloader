@@ -72,6 +72,15 @@ enum RequestType : uint16_t {
   REQ_APP_INFO_CRC_CALC = 0x0302U,  //!< Get the calculate CRC over app flash area
   REQ_APP_INFO_CRC_STRD = 0x0303U,  //!< Get the stored CRC value used for safe startup
 
+  /* Flash Read commands */
+  REQ_FLASH_READ_WORD = 0x0401U,  //!< Reads a word from the flash
+
+  /* Page Buffer Commands */
+  REQ_PAGE_BUFFER_CLEAR = 0x1001U,           //!< Clears the page buffer (RAM)
+  REQ_PAGE_BUFFER_WRITE_WORD = 0x1002U,      //!< Writes a word to the page buffer (RAM)
+  REQ_PAGE_BUFFER_CALC_CRC = 0x1003U,        //!< Calculates the CRC over the page buffer
+  REQ_PAGE_BUFFER_WRITE_TO_FLASH = 0x1004U,  //!< Write the page buffer to the desired flash page
+
 };
 
 /** \brief Definition of the MsgData representation */

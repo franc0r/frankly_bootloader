@@ -20,6 +20,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 
 /**
  * @brief Groups all definitions of the frankly boot bootloader
@@ -46,7 +47,7 @@ class Handler {
   /**
    * @brief Construct a new Handler object
    */
-  Handler() = default;
+  Handler();
 
   /**
    * @brief Process buffered commands
@@ -84,6 +85,8 @@ class Handler {
   [[nodiscard]] auto getFlashAppNumPages() const { return FLASH_APP_NUM_PAGES; }
   [[nodiscard]] auto getFlashAppCRCValueAddress() const { return FLASH_APP_CRC_VALUE_ADDRESS; }
 
+  [[nodiscard]] auto getByteFromPageBuffer(uint32_t byte_idx) const;
+
  private:
   void handleReqPing();
   void handleReqResetDevice();
@@ -104,6 +107,9 @@ class Handler {
   void handleReqAppCrcCalc();
   void handleReqAppCrcStrd();
 
+  void handleReqPageBufferClear();
+  void handleReqPageBufferWriteWord(const msg::Msg& request);
+
   [[nodiscard]] uint32_t calcAppCRC() const;
   [[nodiscard]] uint32_t readAppCRCFromFlash() const;
   [[nodiscard]] bool isAppCRCValid() const;
@@ -115,7 +121,7 @@ class Handler {
 
   /* Page Buffer */
   std::array<uint8_t, FLASH_PAGE_SIZE> _page_buffer;  //!< Page buffer
-  uint32_t _page_buffer_size = {UINT32_MAX};          //!< Current size of page buffer
+  uint32_t _page_buffer_pos = {0U};                   //!< Current write position of page buffer
 
   /* Static Data */
 

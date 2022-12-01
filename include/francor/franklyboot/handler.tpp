@@ -23,6 +23,14 @@ namespace franklyboot {
 /** \brief Prefix of template functions for better readability */
 #define FRANKLYBOOT_HANDLER_TEMPL_PREFIX Handler<FLASH_START, FLASH_APP_FIRST_PAGE, FLASH_SIZE, FLASH_PAGE_SIZE>
 
+// Public Functions ---------------------------------------------------------------------------------------------------
+
+FRANKLYBOOT_HANDLER_TEMPL
+FRANKLYBOOT_HANDLER_TEMPL_PREFIX::Handler() {
+  this->_page_buffer.fill({std::numeric_limits<uint8_t>::max()});
+  this->_page_buffer_pos = 0U;
+}
+
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processBufferedCmds() {
   switch (this->_cmd_buffer) {
@@ -107,6 +115,14 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processRequest(const msg::Msg& msg) {
       handleReqAppCrcStrd();
       break;
 
+    case msg::REQ_PAGE_BUFFER_CLEAR:
+      handleReqPageBufferClear();
+      break;
+
+    case msg::REQ_PAGE_BUFFER_WRITE_WORD:
+      handleReqPageBufferWriteWord(msg);
+      break;
+
     default:
       this->_response.response = msg::RESP_UNKNOWN_REQ;
       break;
@@ -115,6 +131,14 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processRequest(const msg::Msg& msg) {
 
 FRANKLYBOOT_HANDLER_TEMPL
 auto FRANKLYBOOT_HANDLER_TEMPL_PREFIX::getResponse() const { return this->_response; }
+
+FRANKLYBOOT_HANDLER_TEMPL
+
+[[nodiscard]] auto FRANKLYBOOT_HANDLER_TEMPL_PREFIX::getByteFromPageBuffer(uint32_t byte_idx) const {
+  return this->_page_buffer.at(byte_idx);
+}
+
+// Basic Info Requests ------------------------------------------------------------------------------------------------
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPing() {
@@ -159,6 +183,8 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqStartApp(const msg::Msg& request
   }
 }
 
+// General Info Requests ----------------------------------------------------------------------------------------------
+
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoBootloaderVer() {
   this->_response = msg::Msg(msg::REQ_DEV_INFO_BOOTLOADER_VERSION, msg::RESP_ACK, 0);
@@ -201,6 +227,8 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoUniqueID() {
   msg::convertU32ToMsgData(hwi::getUniqueID(), this->_response.data);
 }
 
+// Flash Info Requests ------------------------------------------------------------------------------------------------
+
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashStartAddress() {
   this->_response = msg::Msg(msg::REQ_FLASH_INFO_START_ADDR, msg::RESP_ACK, 0);
@@ -218,6 +246,8 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashNumPages() {
   this->_response = msg::Msg(msg::REQ_FLASH_INFO_NUM_PAGES, msg::RESP_ACK, 0);
   msg::convertU32ToMsgData(FLASH_NUM_PAGES, this->_response.data);
 }
+
+// App Info Requests --------------------------------------------------------------------------------------------------
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqAppPageIdx() {
@@ -238,6 +268,47 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqAppCrcStrd() {
   this->_response = msg::Msg(msg::REQ_APP_INFO_CRC_STRD, msg::RESP_ACK, 0);
   msg::convertU32ToMsgData(crc_value_stored, this->_response.data);
 }
+
+// Page Buffer Requests -----------------------------------------------------------------------------------------------
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferClear() {
+  this->_page_buffer.fill({std::numeric_limits<uint8_t>::max()});
+  this->_page_buffer_pos = 0U;
+  this->_response = msg::Msg(msg::REQ_PAGE_BUFFER_CLEAR, msg::RESP_ACK, 0);
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferWriteWord(const msg::Msg& request) {
+  this->_response = msg::Msg(msg::REQ_PAGE_BUFFER_WRITE_WORD, msg::RESP_ERR, request.packet_id);
+  this->_response.data = request.data;
+
+  const uint32_t data_size = sizeof(uint32_t);
+
+  const bool packet_id_valid =
+      ((this->_page_buffer_pos >> 2U) & std::numeric_limits<uint8_t>::max()) == request.packet_id;
+
+  const bool buffer_overflow = (this->_page_buffer_pos + data_size) > this->_page_buffer.size();
+
+  if (packet_id_valid && !buffer_overflow) {
+    for (auto idx = 0U; idx < data_size; idx++) {
+      this->_page_buffer[this->_page_buffer_pos] = request.data[idx];
+      this->_page_buffer_pos++;
+    }
+
+    const bool page_buffer_full = (this->_page_buffer_pos >= this->_page_buffer.size());
+
+    if (page_buffer_full) {
+      this->_response.response = msg::RESP_ACK_PAGE_FULL;
+    } else {
+      this->_response.response = msg::RESP_ACK;
+    }
+  } else if (buffer_overflow) {
+    this->_response.response = msg::RESP_ERR_PAGE_FULL;
+  }
+}
+
+// Private utils functions --------------------------------------------------------------------------------------------
 
 FRANKLYBOOT_HANDLER_TEMPL
 [[nodiscard]] uint32_t FRANKLYBOOT_HANDLER_TEMPL_PREFIX::calcAppCRC() const {
