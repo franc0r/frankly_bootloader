@@ -71,7 +71,7 @@ class TestHelper : public ::testing::Test {
   [[nodiscard]] uint32_t getUniqueID() const;
   [[nodiscard]] uint32_t calculateCRC(const uint32_t src_address, uint32_t num_bytes);  // NOLINT
   bool eraseFlashPage(uint32_t page_id);
-  bool writeDataBufferToFlash(uint32_t dst_address, uint32_t dst_page_id, uint32_t src_address, uint32_t num_bytes);
+  bool writeDataBufferToFlash(uint32_t dst_address, uint32_t dst_page_id, uint8_t* src_data_ptr, uint32_t num_bytes);
   [[nodiscard]] uint8_t readByteFromFlash(uint32_t flash_src_address);
   void startApp(uint32_t app_flash_address);
 

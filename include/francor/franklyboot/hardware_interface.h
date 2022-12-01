@@ -45,7 +45,7 @@ void resetDevice();
 bool eraseFlashPage(uint32_t page_id);
 
 /** \brief Writes a data buffer to flash / Writes are only performed for a complete page */
-bool writeDataBufferToFlash(uint32_t dst_address, uint32_t dst_page_id, uint32_t src_address, uint32_t num_bytes);
+bool writeDataBufferToFlash(uint32_t dst_address, uint32_t dst_page_id, uint8_t* src_data_ptr, uint32_t num_bytes);
 
 /** \brief Reads a byte from the desired address*/
 [[nodiscard]] uint8_t readByteFromFlash(uint32_t flash_src_address);

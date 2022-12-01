@@ -98,12 +98,13 @@ void TestHelper::resetDevice() { _resetDeviceCalled = true; }
   return _erase_page_result;
 }
 
-bool TestHelper::writeDataBufferToFlash(const uint32_t dst_address, const uint32_t dst_page_id,
-                                        const uint32_t src_address, const uint32_t num_bytes) {
-  (void)dst_address;
+bool TestHelper::writeDataBufferToFlash(const uint32_t dst_address, const uint32_t dst_page_id, uint8_t* src_data_ptr,
+                                        const uint32_t num_bytes) {
   (void)dst_page_id;
-  (void)src_address;
-  (void)num_bytes;
+
+  for (auto idx = 0U; idx < num_bytes; idx++) {
+    setByteInFlash(dst_address + idx, src_data_ptr[idx]);
+  }
 
   _write_to_flash_called = true;
 
@@ -200,11 +201,11 @@ void hwi::resetDevice() {
   return value;
 }
 
-bool hwi::writeDataBufferToFlash(const uint32_t dst_address, const uint32_t dst_page_id, const uint32_t src_address,
+bool hwi::writeDataBufferToFlash(const uint32_t dst_address, const uint32_t dst_page_id, uint8_t* src_data_ptr,
                                  const uint32_t num_bytes) {
   bool value = false;
   if (test_utils::testInstance != nullptr) {
-    value = test_utils::testInstance->writeDataBufferToFlash(dst_address, dst_page_id, src_address, num_bytes);
+    value = test_utils::testInstance->writeDataBufferToFlash(dst_address, dst_page_id, src_data_ptr, num_bytes);
   }
 
   return value;

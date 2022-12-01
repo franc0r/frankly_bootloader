@@ -165,10 +165,54 @@ TEST_F(FlashWrite, WriteCRC) {
     EXPECT_EQ(value, readByteFromFlash(flash_address));
   }
 
-  /*for (auto idx = 0U; idx < sizeof(uint32_t); idx++) {
+  for (auto idx = 0U; idx < sizeof(uint32_t); idx++) {
     const auto expected_value = static_cast<uint8_t>(CRC_VALUE >> (idx * 8U));
     const auto address = getHandle().getFlashAppCRCValueAddress() + idx;
 
     EXPECT_EQ(expected_value, readByteFromFlash(address));
-  }*/
+  }
+}
+
+TEST_F(FlashWrite, WriteCRCEraseError) {
+  constexpr msg::RequestType REQUEST = msg::REQ_FLASH_WRITE_APP_CRC;
+  constexpr uint8_t PACKET_ID = 0;
+  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR;
+  constexpr uint32_t CRC_VALUE = 0xDEADBEEF;
+
+  setErasePageResult(false);
+  setWriteToFlashResult(true);
+
+  /* Create request */
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::convertU32ToMsgData(CRC_VALUE, request_msg.data);
+
+  /* Process request and get response */
+  getHandle().processRequest(request_msg);
+  const auto response = getHandle().getResponse();
+
+  /* Check response */
+  EXPECT_EQ(response.request, REQUEST);
+  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+}
+
+TEST_F(FlashWrite, WriteCRCFlashError) {
+  constexpr msg::RequestType REQUEST = msg::REQ_FLASH_WRITE_APP_CRC;
+  constexpr uint8_t PACKET_ID = 0;
+  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR;
+  constexpr uint32_t CRC_VALUE = 0xDEADBEEF;
+
+  setErasePageResult(true);
+  setWriteToFlashResult(false);
+
+  /* Create request */
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::convertU32ToMsgData(CRC_VALUE, request_msg.data);
+
+  /* Process request and get response */
+  getHandle().processRequest(request_msg);
+  const auto response = getHandle().getResponse();
+
+  /* Check response */
+  EXPECT_EQ(response.request, REQUEST);
+  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
 }

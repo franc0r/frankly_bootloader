@@ -392,8 +392,7 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferWriteToFlash(const msg
     const auto erase_result = hwi::eraseFlashPage(page_id);
 
     if (erase_result) {
-      uint32_t page_buffer_address = getPageBufferAddress();
-      const bool flash_result = hwi::writeDataBufferToFlash(address, page_id, page_buffer_address, FLASH_PAGE_SIZE);
+      const bool flash_result = hwi::writeDataBufferToFlash(address, page_id, _page_buffer.data(), _page_buffer.size());
 
       if (flash_result) {
         this->_response.response = msg::RESP_ACK;
@@ -446,8 +445,7 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashWriteAppCrc(const msg::Msg&
 
   if (erase_result) {
     /* Write page to flash */
-    uint32_t page_buffer_address = getPageBufferAddress();
-    const bool flash_result = hwi::writeDataBufferToFlash(start_address, page_id, page_buffer_address, FLASH_PAGE_SIZE);
+    const bool flash_result = hwi::writeDataBufferToFlash(start_address, page_id, _page_buffer.data(), FLASH_PAGE_SIZE);
 
     if (flash_result) {
       this->_response.response = msg::RESP_ACK;
