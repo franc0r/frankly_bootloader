@@ -108,8 +108,12 @@ class Handler {
   void handleReqAppCrcStrd();
 
   void handleReqPageBufferClear();
+  void handleReqPageBufferReadWord(const msg::Msg& request);
   void handleReqPageBufferWriteWord(const msg::Msg& request);
+  void handleReqPageBufferCalcCrc();
+  void handleReqPageBufferWriteToFlash(const msg::Msg& request);
 
+  [[nodiscard]] uint32_t getPageBufferAddress() const;
   [[nodiscard]] uint32_t calcAppCRC() const;
   [[nodiscard]] uint32_t readAppCRCFromFlash() const;
   [[nodiscard]] bool isAppCRCValid() const;

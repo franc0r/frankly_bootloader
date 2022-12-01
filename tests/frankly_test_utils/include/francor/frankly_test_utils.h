@@ -47,6 +47,7 @@ class TestHelper : public ::testing::Test {
   void setCRCResult(uint32_t value);
 
   void setByteInFlash(uint32_t address, uint8_t value);
+  void setWriteToFlashResult(bool result);
 
   /* Help functions */
   void clearPageBuffer();
@@ -56,6 +57,7 @@ class TestHelper : public ::testing::Test {
   [[nodiscard]] bool startAppCalled() const;
   [[nodiscard]] uint32_t getCalcCRCSrcAddress() const;
   [[nodiscard]] uint32_t getCalcCRCNumBytes() const;
+  [[nodiscard]] bool writeToFlashCalled() const;
 
   /* Hardware interface simulation -> called by hwi:: functions */
   void resetDevice();
@@ -85,6 +87,9 @@ class TestHelper : public ::testing::Test {
   uint32_t _crc_calc_result = {0U};
 
   bool _startAppCalled = {false};
+
+  bool _write_to_flash_result = {false};
+  bool _write_to_flash_called = {false};
 
   std::map<uint32_t, uint8_t> _flash_simulation;
 };

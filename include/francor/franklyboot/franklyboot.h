@@ -17,11 +17,24 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 
 /**
  * @brief Groups all definitions of the frankly boot bootloader
  */
 namespace franklyboot {
+
+/**
+ * @brief Check if code is compiled on a 64 bit system
+ *
+ */
+constexpr bool is64BitSystem() {                      // NOLINT
+  if constexpr (sizeof(void*) == sizeof(uint64_t)) {  // NOLINT
+    return true;                                      // NOLINT
+  } else {                                            // NOLINT
+    return false;                                     // NOLINT
+  }                                                   // NOLINT
+}
 
 /** \brief Version of frankly boot bootloader */
 namespace version {

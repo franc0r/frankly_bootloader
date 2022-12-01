@@ -3,8 +3,8 @@
 The following table shows the supported request types. To get detailed information click the link on the sidebar
 
 
-| Enum                                  | ID (Hex) | Short Description                                                | Implemented | Tested |
-|---------------------------------------|----------|------------------------------------------------------------------|-------------|--------|
+| Enum                                  | ID (Hex) | Short Description                                                  | Implemented | Tested |
+|---------------------------------------|----------|--------------------------------------------------------------------|-------------|--------|
 | REQ_PING                              | 0x0001   | Network search via sync for multi device networks                  | yes         | yes    |
 | REQ_RESET_DEVICE                      | 0x0011   | Resets the device                                                  | yes         | yes    |
 | REQ_START_APP                         | 0x0012   | Starts the application                                             | yes         | yes    |
@@ -26,12 +26,12 @@ The following table shows the supported request types. To get detailed informati
 | **Flash Read Commands**               |  
 | REQ_FLASH_READ_WORD                   | 0x0401   | Read a word from flash at desired address                          | no          | no     |
 | **Page Buffer Commands**              |  
-| REQ_PAGE_BUFFER_CLEAR                 | 0x1001   | Clears the page buffer in RAM used for flashing                    | no          | no     |
-| REQ_PAGE_BUFFER_WRITE_WORD            | 0x1002   | Writes a word to the page buffer in RAM                            | no          | no     |
-| REQ_PAGE_BUFFER_CALC_CRC              | 0x1003   | Calculates the CRC value for the page buffer                       | no          | no     |
-| REQ_PAGE_BUFFER_WRITE_TO_FLASH        | 0x1004   | Writes the complete page buffer to the flash                       | no          | no     |
+| REQ_PAGE_BUFFER_CLEAR                 | 0x1001   | Clears the page buffer in RAM used for flashing                    | yes         | yes    |
+| REQ_PAGE_BUFFER_READ_WORD             | 0x1002   | Reads a word from the page buffer in RAM                           | yes         | yes    |
+| REQ_PAGE_BUFFER_WRITE_WORD            | 0x1003   | Writes a word to the page buffer in RAM                            | yes         | yes    |
+| REQ_PAGE_BUFFER_CALC_CRC              | 0x1004   | Calculates the CRC value for the page buffer                       | yes         | yes    |
+| REQ_PAGE_BUFFER_WRITE_TO_FLASH        | 0x1005   | Writes the complete page buffer to the flash                       | yes         | yes    |
 | **Write Commands**                    |  
-| REQ_WRITE_ERASE_UNSAFE                | 0x1101   | Erase complete arease including bootloader area                    | no          | no     |
-| REQ_WRITE_APP_ERASE                   | 0x1102   | Erase the flash area containing the app                            | no          | no     |
-| REQ_WRITE_APP_WRITE_CRC               | 0x1103   | Writes the desired CRC value to the flash for app checking         | no          | no     |
+| REQ_WRITE_APP_ERASE                   | 0x1101   | Erase the flash area containing the app                            | no          | no     |
+| REQ_WRITE_APP_WRITE_CRC               | 0x1102   | Writes the desired CRC value to the flash for app checking         | no          | no     |
   

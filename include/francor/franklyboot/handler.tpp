@@ -119,8 +119,20 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processRequest(const msg::Msg& msg) {
       handleReqPageBufferClear();
       break;
 
+    case msg::REQ_PAGE_BUFFER_READ_WORD:
+      handleReqPageBufferReadWord(msg);
+      break;
+
     case msg::REQ_PAGE_BUFFER_WRITE_WORD:
       handleReqPageBufferWriteWord(msg);
+      break;
+
+    case msg::REQ_PAGE_BUFFER_CALC_CRC:
+      handleReqPageBufferCalcCrc();
+      break;
+
+    case msg::REQ_PAGE_BUFFER_WRITE_TO_FLASH:
+      handleReqPageBufferWriteToFlash(msg);
       break;
 
     default:
@@ -279,6 +291,24 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferClear() {
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferReadWord(const msg::Msg& request) {
+  this->_response = msg::Msg(msg::REQ_PAGE_BUFFER_READ_WORD, msg::RESP_ERR, request.packet_id);
+
+  const auto byte_idx = msg::convertMsgDataToU32(request.data);
+  const auto byte_idx_valid = ((byte_idx + sizeof(uint32_t)) <= _page_buffer.size());
+
+  if (byte_idx_valid) {
+    this->_response.data[0U] = _page_buffer.at(byte_idx);
+    this->_response.data[1U] = _page_buffer.at(byte_idx + 1U);
+    this->_response.data[2U] = _page_buffer.at(byte_idx + 2U);
+    this->_response.data[3U] = _page_buffer.at(byte_idx + 3U);
+    this->_response.response = msg::RESP_ACK;
+  } else {
+    this->_response.response = msg::RESP_ERR_INVLD_ARG;
+  }
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferWriteWord(const msg::Msg& request) {
   this->_response = msg::Msg(msg::REQ_PAGE_BUFFER_WRITE_WORD, msg::RESP_ERR, request.packet_id);
   this->_response.data = request.data;
@@ -308,7 +338,54 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferWriteWord(const msg::M
   }
 }
 
-// Private utils functions --------------------------------------------------------------------------------------------
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferCalcCrc() {
+  this->_response = msg::Msg(msg::REQ_PAGE_BUFFER_CALC_CRC, msg::RESP_ACK, 0);
+
+  uint32_t page_buffer_address = getPageBufferAddress();
+  const uint32_t crc_value = hwi::calculateCRC(page_buffer_address, _page_buffer.size());
+
+  msg::convertU32ToMsgData(crc_value, this->_response.data);
+}
+
+FRANKLYBOOT_HANDLER_TEMPL
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferWriteToFlash(const msg::Msg& request) {
+  this->_response = msg::Msg(msg::REQ_PAGE_BUFFER_WRITE_TO_FLASH, msg::RESP_ERR, 0);
+  this->_response.data = request.data;
+
+  const uint32_t page_id = msg::convertMsgDataToU32(request.data);
+  const uint32_t address = FLASH_START + FLASH_PAGE_SIZE * page_id;
+  const bool address_valid = (address >= FLASH_START && address < (FLASH_START + FLASH_SIZE));
+
+  if (address_valid) {
+    uint32_t page_buffer_address = getPageBufferAddress();
+
+    const bool flash_ok = hwi::writeDataBufferToFlash(address, page_id, page_buffer_address, FLASH_PAGE_SIZE);
+
+    if (flash_ok) {
+      this->_response.response = msg::RESP_ACK;
+    }
+  }
+}
+
+// Private utils functions
+// --------------------------------------------------------------------------------------------
+
+FRANKLYBOOT_HANDLER_TEMPL
+uint32_t FRANKLYBOOT_HANDLER_TEMPL_PREFIX::getPageBufferAddress() const {
+  uint32_t page_buffer_address = 0U;
+
+  if constexpr (is64BitSystem()) {
+    /* Only used for testing on normal host pcs with 64 - bit*/
+    auto ptr_address = reinterpret_cast<uint64_t>(_page_buffer.data());
+    page_buffer_address = static_cast<uint32_t>(ptr_address);
+
+  } else {
+    page_buffer_address = reinterpret_cast<uint32_t>(_page_buffer.data());
+  }
+
+  return page_buffer_address;
+}
 
 FRANKLYBOOT_HANDLER_TEMPL
 [[nodiscard]] uint32_t FRANKLYBOOT_HANDLER_TEMPL_PREFIX::calcAppCRC() const {

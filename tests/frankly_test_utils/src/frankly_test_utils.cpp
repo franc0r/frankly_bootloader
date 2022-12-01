@@ -45,6 +45,8 @@ void TestHelper::setByteInFlash(uint32_t address, uint8_t value) {
   }
 }
 
+void TestHelper::setWriteToFlashResult(bool result) { _write_to_flash_result = result; }
+
 // Help Functions -----------------------------------------------------------------------------------------------------
 
 void TestHelper::clearPageBuffer() {
@@ -59,6 +61,7 @@ void TestHelper::clearPageBuffer() {
 [[nodiscard]] bool TestHelper::startAppCalled() const { return _startAppCalled; }
 [[nodiscard]] uint32_t TestHelper::getCalcCRCSrcAddress() const { return _crc_calc_src_address; }
 [[nodiscard]] uint32_t TestHelper::getCalcCRCNumBytes() const { return _crc_calc_num_bytes; }
+[[nodiscard]] bool TestHelper::writeToFlashCalled() const { return _write_to_flash_called; }
 
 // HWI abstraction ----------------------------------------------------------------------------------------------------
 
@@ -84,7 +87,10 @@ bool TestHelper::writeDataBufferToFlash(const uint32_t dst_address, const uint32
   (void)dst_page_id;
   (void)src_address;
   (void)num_bytes;
-  return false;
+
+  _write_to_flash_called = true;
+
+  return _write_to_flash_result;
 }
 
 [[nodiscard]] uint8_t TestHelper::readByteFromFlash(uint32_t flash_src_address) {

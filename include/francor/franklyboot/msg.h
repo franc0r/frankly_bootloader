@@ -42,6 +42,7 @@ enum ResponseType : uint8_t {
   RESP_ERR_CRC_INVLD = 0xFBU,      //!< Error, CRC check failed
   RESP_ACK_PAGE_FULL = 0xFAU,      //!< Acknowledge and info that page buffer is full
   RESP_ERR_PAGE_FULL = 0xF9U,      //!< Error, word not writable page buffer is full
+  RESP_ERR_INVLD_ARG = 0xF8U,      //!< Error, invalid argument (out of range, ...)
 
 };
 
@@ -77,9 +78,10 @@ enum RequestType : uint16_t {
 
   /* Page Buffer Commands */
   REQ_PAGE_BUFFER_CLEAR = 0x1001U,           //!< Clears the page buffer (RAM)
-  REQ_PAGE_BUFFER_WRITE_WORD = 0x1002U,      //!< Writes a word to the page buffer (RAM)
-  REQ_PAGE_BUFFER_CALC_CRC = 0x1003U,        //!< Calculates the CRC over the page buffer
-  REQ_PAGE_BUFFER_WRITE_TO_FLASH = 0x1004U,  //!< Write the page buffer to the desired flash page
+  REQ_PAGE_BUFFER_READ_WORD = 0x1002U,       //!< Reads a word to the page buffer (RAM)
+  REQ_PAGE_BUFFER_WRITE_WORD = 0x1003U,      //!< Writes a word to the page buffer (RAM)
+  REQ_PAGE_BUFFER_CALC_CRC = 0x1004U,        //!< Calculates the CRC over the page buffer
+  REQ_PAGE_BUFFER_WRITE_TO_FLASH = 0x1005U,  //!< Write the page buffer to the desired flash page
 
 };
 
