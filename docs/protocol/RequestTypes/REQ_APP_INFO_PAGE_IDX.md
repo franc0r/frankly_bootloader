@@ -18,10 +18,10 @@ App first address = (Flash Start) + (Page Size) * (App page idx) = 0x0800_0000 +
 
 ## Protocol / Data encoding
 
-| Direction | Request Type | Response Type | Packet ID | Data[0] | Data[1] | Data[2] | Data [3] |
+| Direction | Request Type | Result Type | Packet ID | Data[0] | Data[1] | Data[2] | Data [3] |
 |-|-|-|-|-|-|-|-|
-|Request|REQ_APP_INFO_PAGE_IDX|RESP_NONE|0|-|-|-|-|
-|Response|REQ_APP_INFO_PAGE_IDX|RESP_ACK|0|PAGE_IDX_0|PAGE_IDX_1|PAGE_IDX_2|PAGE_IDX_3|
+|Request|REQ_APP_INFO_PAGE_IDX|RES_NONE|0|-|-|-|-|
+|Response|REQ_APP_INFO_PAGE_IDX|RES_OK|0|PAGE_IDX_0|PAGE_IDX_1|PAGE_IDX_2|PAGE_IDX_3|
 
 *Data encoding*
 
@@ -39,7 +39,7 @@ const uint8_t reqMsg[] = {0x01, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 // Response received from device
 // RequestType: REQ_APP_INFO_PAGE_IDX = 0x0301
-// ResponseType: RESP_ACK = 0x01
+// ResponseType: RES_OK = 0x01
 // Packet-ID: 0
 // Data: PAGE_IDX_Value = 0x02
 const uint8_t respMsg[] = {0x01, 0x03, 0x01, 0x00, 0x02, 0x00, 0x00, 0x00};

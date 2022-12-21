@@ -11,7 +11,7 @@ A message consists of four elements:
 | Type          | Byte-Size | Description                                          |
 |---------------|-----------|------------------------------------------------------|
 | Request Type  | 2         | What does the bootloader have to do?                 |
-| Response Type | 1         | What has the bootloader done with the request        |
+| Result Type | 1         | What has the bootloader done with the request        |
 | Packet ID     | 1         | ID of the packet if multiple data is send / received |
 | Data          | 4         | Payload data                                         |
 
@@ -24,7 +24,7 @@ Important: The communication is always triggered by the host! The bootloader wil
 An example how a simple request and response looks like:
 ```
 // '-' means that the data is sent, but content is not cared
-| Direction        | Request Type | Response Type | Packet-ID | Data               |
+| Direction        | Request Type | Result Type | Packet-ID | Data               |
 |------------------|--------------|---------------|-----------|--------------------|
 | (Host -> Client) | REQ_PING     | -             | -         | -                  |
 | (Client -> Host) | REQ_PING     | RESP_ACK      | 0         | BOOTLOADER-VERSION | 

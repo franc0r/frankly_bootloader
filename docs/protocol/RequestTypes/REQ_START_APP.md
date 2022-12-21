@@ -11,21 +11,21 @@ There are two modes to request an application start:
 
 ### Normal startup (with CRC-32 check):
 
-| Direction | Request Type | Response Type | Packet ID | Data[0] | Data[1] | Data[2] | Data [3] |
+| Direction | Request Type | Result Type | Packet ID | Data[0] | Data[1] | Data[2] | Data [3] |
 |-|-|-|-|-|-|-|-|
-|Request|REQ_START_APP|RESP_NONE|0|-|-|-|-|
-|Response|REQ_START_APP|RESP_ACK|0|-|-|-|-|
+|Request|REQ_START_APP|RES_NONE|0|-|-|-|-|
+|Response|REQ_START_APP|RES_OK|0|-|-|-|-|
 
 #### Errors
 
-- RESP_ERR_CRC_INVLD: CRC check failed! Stored and calculated CRC differs!
+- RES_ERR_CRC_INVLD: CRC check failed! Stored and calculated CRC differs!
 
 ### Unsafe startup (without CRC-32 check):
 
-| Direction | Request Type | Response Type | Packet ID | Data[0] | Data[1] | Data[2] | Data [3] |
+| Direction | Request Type | Result Type | Packet ID | Data[0] | Data[1] | Data[2] | Data [3] |
 |-|-|-|-|-|-|-|-|
-|Request|REQ_START_APP|RESP_NONE|0|0xFF|0xFF|0xFF|0xFF|
-|Response|REQ_START_APP|RESP_ACK|0|0xFF|0xFF|0xFF|0xFF|
+|Request|REQ_START_APP|RES_NONE|0|0xFF|0xFF|0xFF|0xFF|
+|Response|REQ_START_APP|RES_OK|0|0xFF|0xFF|0xFF|0xFF|
 
 #### Errors
 
@@ -42,14 +42,14 @@ const uint8_t reqMsg[] = {0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 // Response received from device
 // RequestType: REQ_START_APP = 0x0011U
-// ResponseType: RESP_ACK = 0x01
+// ResponseType: RES_OK = 0x01
 const uint8_t respMsgAck[] = {0x12, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 /* OR */
 
 // Response received from device
 // RequestType: REQ_START_APP = 0x0011U
-// ResponseType: RESP_ERR_CRC_INVLD = 0xFB
+// ResponseType: RES_ERR_CRC_INVLD = 0xFB
 const uint8_t respMsgAck[] = {0x12, 0x00, 0xFB, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 /* UNSAFE STARTUP */
@@ -60,7 +60,7 @@ const uint8_t reqMsg[] = {0x12, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF};
 
 // Response received from device
 // RequestType: REQ_START_APP = 0x0011U
-// ResponseType: RESP_ACK = 0x01
+// ResponseType: RES_OK = 0x01
 // Data: 0xFFFFFFFFU
 const uint8_t respMsgAck[] = {0x12, 0x00, 0x01, 0x00, 0xFF, 0xFF, 0xFF, 0xFF};
 

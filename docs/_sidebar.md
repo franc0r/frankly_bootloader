@@ -20,6 +20,6 @@
     * [REQ_APP_INFO_CRC_STRD](./protocol/RequestTypes/REQ_APP_INFO_CRC_STRD.md)
 
 
-  * [Response Types](./protocol/ResponseTypes.md)
+  * [Result Types](./protocol/ResultTypes.md)
 
 * [LICENSE](./LICENSE)
