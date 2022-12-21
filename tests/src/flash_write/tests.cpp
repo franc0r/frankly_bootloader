@@ -31,7 +31,7 @@ class FlashWrite : public TestHelper {
 TEST_F(FlashWrite, ErasePage) {
   constexpr msg::RequestType REQUEST = msg::REQ_FLASH_WRITE_ERASE_PAGE;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
   constexpr uint32_t PAGE_ID = 3U;
 
   setErasePageResult(true);
@@ -44,7 +44,7 @@ TEST_F(FlashWrite, ErasePage) {
   }
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   msg::convertU32ToMsgData(PAGE_ID, request_msg.data);
 
   /* Process request and get response */
@@ -53,7 +53,7 @@ TEST_F(FlashWrite, ErasePage) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   EXPECT_EQ(true, erasePageCalled());
 
   /* Check flash */
@@ -66,13 +66,13 @@ TEST_F(FlashWrite, ErasePage) {
 TEST_F(FlashWrite, ErasePageHWError) {
   constexpr msg::RequestType REQUEST = msg::REQ_FLASH_WRITE_ERASE_PAGE;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_ERR;
   constexpr uint32_t PAGE_ID = 3U;
 
   setErasePageResult(false);
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   msg::convertU32ToMsgData(PAGE_ID, request_msg.data);
 
   /* Process request and get response */
@@ -81,20 +81,20 @@ TEST_F(FlashWrite, ErasePageHWError) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   EXPECT_EQ(true, erasePageCalled());
 }
 
 TEST_F(FlashWrite, ErasePageBootlArea) {
   constexpr msg::RequestType REQUEST = msg::REQ_FLASH_WRITE_ERASE_PAGE;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR_INVLD_ARG;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_ERR_INVLD_ARG;
   constexpr uint32_t PAGE_ID = 1U;
 
   setErasePageResult(false);
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   msg::convertU32ToMsgData(PAGE_ID, request_msg.data);
 
   /* Process request and get response */
@@ -103,20 +103,20 @@ TEST_F(FlashWrite, ErasePageBootlArea) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   EXPECT_EQ(false, erasePageCalled());
 }
 
 TEST_F(FlashWrite, ErasePageInvldPageID) {
   constexpr msg::RequestType REQUEST = msg::REQ_FLASH_WRITE_ERASE_PAGE;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR_INVLD_ARG;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_ERR_INVLD_ARG;
   constexpr uint32_t PAGE_ID = FLASH_NUM_PAGES;
 
   setErasePageResult(false);
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   msg::convertU32ToMsgData(PAGE_ID, request_msg.data);
 
   /* Process request and get response */
@@ -125,14 +125,14 @@ TEST_F(FlashWrite, ErasePageInvldPageID) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   EXPECT_EQ(false, erasePageCalled());
 }
 
 TEST_F(FlashWrite, WriteCRC) {
   constexpr msg::RequestType REQUEST = msg::REQ_FLASH_WRITE_APP_CRC;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
   constexpr uint32_t CRC_PAGE_ADDRESS = FLASH_START + (FLASH_NUM_PAGES - 1U) * FLASH_PAGE_SIZE;
   constexpr uint32_t CRC_VALUE = 0xDEADBEEF;
 
@@ -147,7 +147,7 @@ TEST_F(FlashWrite, WriteCRC) {
   }
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   msg::convertU32ToMsgData(CRC_VALUE, request_msg.data);
 
   /* Process request and get response */
@@ -156,7 +156,7 @@ TEST_F(FlashWrite, WriteCRC) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
 
   /* Check data */
   for (uint32_t byte_idx = 0U; byte_idx < (FLASH_PAGE_SIZE - 4U); byte_idx++) {
@@ -176,14 +176,14 @@ TEST_F(FlashWrite, WriteCRC) {
 TEST_F(FlashWrite, WriteCRCEraseError) {
   constexpr msg::RequestType REQUEST = msg::REQ_FLASH_WRITE_APP_CRC;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_ERR;
   constexpr uint32_t CRC_VALUE = 0xDEADBEEF;
 
   setErasePageResult(false);
   setWriteToFlashResult(true);
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   msg::convertU32ToMsgData(CRC_VALUE, request_msg.data);
 
   /* Process request and get response */
@@ -192,20 +192,20 @@ TEST_F(FlashWrite, WriteCRCEraseError) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
 }
 
 TEST_F(FlashWrite, WriteCRCFlashError) {
   constexpr msg::RequestType REQUEST = msg::REQ_FLASH_WRITE_APP_CRC;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_ERR;
   constexpr uint32_t CRC_VALUE = 0xDEADBEEF;
 
   setErasePageResult(true);
   setWriteToFlashResult(false);
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   msg::convertU32ToMsgData(CRC_VALUE, request_msg.data);
 
   /* Process request and get response */
@@ -214,5 +214,5 @@ TEST_F(FlashWrite, WriteCRCFlashError) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
 }

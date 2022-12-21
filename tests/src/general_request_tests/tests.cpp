@@ -42,7 +42,7 @@ TEST_F(GeneralRequestTests, UnknownReq) {
   const auto response = getHandle().getResponse();
 
   EXPECT_EQ(response.request, INVALID_REQUEST_TYPE);
-  EXPECT_EQ(response.response, msg::RESP_UNKNOWN_REQ);
+  EXPECT_EQ(response.result, msg::RES_ERR_UNKNOWN_REQ);
 }
 
 /**
@@ -52,11 +52,11 @@ TEST_F(GeneralRequestTests, UnknownReq) {
 TEST_F(GeneralRequestTests, ReqPing) {
   constexpr msg::RequestType REQUEST = msg::REQ_PING;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
   constexpr msg::MsgData EXPECTED_DATA = {version::VERSION[0], version::VERSION[1], version::VERSION[2], 0};
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
 
   /* Process request and get response */
   getHandle().processRequest(request_msg);
@@ -64,7 +64,7 @@ TEST_F(GeneralRequestTests, ReqPing) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
   }
@@ -76,10 +76,10 @@ TEST_F(GeneralRequestTests, ReqPing) {
 TEST_F(GeneralRequestTests, ReqResetDevice) {
   constexpr msg::RequestType REQUEST = msg::REQ_RESET_DEVICE;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
 
   /* Process request and get response */
   getHandle().processRequest(request_msg);
@@ -88,7 +88,7 @@ TEST_F(GeneralRequestTests, ReqResetDevice) {
   /* Check response */
   EXPECT_EQ(false, this->resetDeviceCalled());
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
 
   getHandle().processBufferedCmds();
   EXPECT_EQ(true, this->resetDeviceCalled());
@@ -97,11 +97,11 @@ TEST_F(GeneralRequestTests, ReqResetDevice) {
 TEST_F(GeneralRequestTests, ReqStartAppUnsafe) {
   constexpr msg::RequestType REQUEST = msg::REQ_START_APP;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
   constexpr msg::MsgData EXPECTED_DATA = {0xFF, 0xFF, 0xFF, 0xFF};
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   request_msg.data = EXPECTED_DATA;
 
   /* Process request and get response */
@@ -111,7 +111,7 @@ TEST_F(GeneralRequestTests, ReqStartAppUnsafe) {
   /* Check response */
   EXPECT_EQ(this->startAppCalled(), false);
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
   }
@@ -123,11 +123,11 @@ TEST_F(GeneralRequestTests, ReqStartAppUnsafe) {
 TEST_F(GeneralRequestTests, ReqStartAppCRCInvalid) {
   constexpr msg::RequestType REQUEST = msg::REQ_START_APP;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR_CRC_INVLD;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_ERR_CRC_INVLD;
   constexpr msg::MsgData EXPECTED_DATA = {0, 0, 0, 0};
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
 
   /* Process request and get response */
   getHandle().processRequest(request_msg);
@@ -136,7 +136,7 @@ TEST_F(GeneralRequestTests, ReqStartAppCRCInvalid) {
   /* Check response */
   EXPECT_EQ(this->startAppCalled(), false);
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
   }
@@ -150,7 +150,7 @@ TEST_F(GeneralRequestTests, ReqStartAppCRCValid) {
   constexpr uint32_t CRC_VALUE = 0xDEADBEEF;
   constexpr msg::RequestType REQUEST = msg::REQ_START_APP;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
   constexpr msg::MsgData EXPECTED_DATA = {0, 0, 0, 0};
 
   /* Add CRC value to flash */
@@ -161,7 +161,7 @@ TEST_F(GeneralRequestTests, ReqStartAppCRCValid) {
   this->setCRCResult(CRC_VALUE);
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
 
   /* Process request and get response */
   getHandle().processRequest(request_msg);
@@ -170,7 +170,7 @@ TEST_F(GeneralRequestTests, ReqStartAppCRCValid) {
   /* Check response */
   EXPECT_EQ(this->startAppCalled(), false);
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
   }

@@ -52,7 +52,7 @@ FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processRequest(const msg::Msg& msg) {
   /* First response is always an error as long as request is not handeld*/
   this->_response = msg;
-  this->_response.response = msg::RESP_ERR;
+  this->_response.result = msg::RES_ERR;
 
   switch (msg.request) {
     case msg::REQ_PING:
@@ -148,7 +148,7 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processRequest(const msg::Msg& msg) {
       break;
 
     default:
-      this->_response.response = msg::RESP_UNKNOWN_REQ;
+      this->_response.result = msg::RES_ERR_UNKNOWN_REQ;
       break;
   };
 }
@@ -167,7 +167,7 @@ FRANKLYBOOT_HANDLER_TEMPL
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPing() {
   /* Transmit bootloader version as ping response */
-  this->_response = msg::Msg(msg::REQ_PING, msg::RESP_ACK, 0);
+  this->_response = msg::Msg(msg::REQ_PING, msg::RES_OK, 0);
 
   for (auto idx = 0U; idx < this->_response.data.size(); idx++) {
     if (idx < version::VERSION.size()) {
@@ -181,7 +181,7 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPing() {
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqResetDevice() {
   /* Queue reset device command */
-  this->_response = msg::Msg(msg::REQ_RESET_DEVICE, msg::RESP_ACK, 0);
+  this->_response = msg::Msg(msg::REQ_RESET_DEVICE, msg::RES_OK, 0);
   this->_cmd_buffer = CommandBuffer::RESET_DEVICE;
 }
 
@@ -189,20 +189,20 @@ FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqStartApp(const msg::Msg& request) {
   constexpr uint32_t START_APP_UNSAFE_WORD = 0xFFFFFFFFU;
 
-  this->_response = msg::Msg(msg::REQ_START_APP, msg::RESP_ERR, 0);
+  this->_response = msg::Msg(msg::REQ_START_APP, msg::RES_ERR, 0);
 
   const bool start_app_safe = (msg::convertMsgDataToU32(request.data) != START_APP_UNSAFE_WORD);
   if (start_app_safe) {
     const bool is_crc_valid = isAppCRCValid();
     if (is_crc_valid) {
       this->_cmd_buffer = CommandBuffer::START_APP;
-      this->_response.response = msg::RESP_ACK;
+      this->_response.result = msg::RES_OK;
     } else {
-      this->_response.response = msg::RESP_ERR_CRC_INVLD;
+      this->_response.result = msg::RES_ERR_CRC_INVLD;
     }
   } else {
     this->_cmd_buffer = CommandBuffer::START_APP;
-    this->_response.response = msg::RESP_ACK;
+    this->_response.result = msg::RES_OK;
     this->_response.data = request.data;
   }
 }
@@ -211,7 +211,7 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqStartApp(const msg::Msg& request
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoBootloaderVer() {
-  this->_response = msg::Msg(msg::REQ_DEV_INFO_BOOTLOADER_VERSION, msg::RESP_ACK, 0);
+  this->_response = msg::Msg(msg::REQ_DEV_INFO_BOOTLOADER_VERSION, msg::RES_OK, 0);
   this->_response.data[0] = version::VERSION[0];
   this->_response.data[1] = version::VERSION[1];
   this->_response.data[2] = version::VERSION[2];
@@ -223,31 +223,31 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoBootloaderCRC() {
   const uint32_t bootl_size = FLASH_APP_FIRST_PAGE * FLASH_PAGE_SIZE;
   const uint32_t crc_value = hwi::calculateCRC(bootl_start_addr, bootl_size);
 
-  this->_response = msg::Msg(msg::REQ_DEV_INFO_BOOTLOADER_CRC, msg::RESP_ACK, 0);
+  this->_response = msg::Msg(msg::REQ_DEV_INFO_BOOTLOADER_CRC, msg::RES_OK, 0);
   msg::convertU32ToMsgData(crc_value, this->_response.data);
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoVendorID() {
-  this->_response = msg::Msg(msg::REQ_DEV_INFO_VID, msg::RESP_ACK, 0);
+  this->_response = msg::Msg(msg::REQ_DEV_INFO_VID, msg::RES_OK, 0);
   msg::convertU32ToMsgData(hwi::getVendorID(), this->_response.data);
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoProductID() {
-  this->_response = msg::Msg(msg::REQ_DEV_INFO_PID, msg::RESP_ACK, 0);
+  this->_response = msg::Msg(msg::REQ_DEV_INFO_PID, msg::RES_OK, 0);
   msg::convertU32ToMsgData(hwi::getProductID(), this->_response.data);
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoProductionDate() {
-  this->_response = msg::Msg(msg::REQ_DEV_INFO_PRD, msg::RESP_ACK, 0);
+  this->_response = msg::Msg(msg::REQ_DEV_INFO_PRD, msg::RES_OK, 0);
   msg::convertU32ToMsgData(hwi::getProductionDate(), this->_response.data);
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoUniqueID() {
-  this->_response = msg::Msg(msg::REQ_DEV_INFO_UID, msg::RESP_ACK, 0);
+  this->_response = msg::Msg(msg::REQ_DEV_INFO_UID, msg::RES_OK, 0);
   msg::convertU32ToMsgData(hwi::getUniqueID(), this->_response.data);
 }
 
@@ -255,19 +255,19 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoUniqueID() {
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashStartAddress() {
-  this->_response = msg::Msg(msg::REQ_FLASH_INFO_START_ADDR, msg::RESP_ACK, 0);
+  this->_response = msg::Msg(msg::REQ_FLASH_INFO_START_ADDR, msg::RES_OK, 0);
   msg::convertU32ToMsgData(FLASH_START, this->_response.data);
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashPageSize() {
-  this->_response = msg::Msg(msg::REQ_FLASH_INFO_PAGE_SIZE, msg::RESP_ACK, 0);
+  this->_response = msg::Msg(msg::REQ_FLASH_INFO_PAGE_SIZE, msg::RES_OK, 0);
   msg::convertU32ToMsgData(FLASH_PAGE_SIZE, this->_response.data);
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashNumPages() {
-  this->_response = msg::Msg(msg::REQ_FLASH_INFO_NUM_PAGES, msg::RESP_ACK, 0);
+  this->_response = msg::Msg(msg::REQ_FLASH_INFO_NUM_PAGES, msg::RES_OK, 0);
   msg::convertU32ToMsgData(FLASH_NUM_PAGES, this->_response.data);
 }
 
@@ -275,21 +275,21 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashNumPages() {
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqAppPageIdx() {
-  this->_response = msg::Msg(msg::REQ_APP_INFO_PAGE_IDX, msg::RESP_ACK, 0);
+  this->_response = msg::Msg(msg::REQ_APP_INFO_PAGE_IDX, msg::RES_OK, 0);
   msg::convertU32ToMsgData(FLASH_APP_FIRST_PAGE, this->_response.data);
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqAppCrcCalc() {
   uint32_t crc_value_calc = this->calcAppCRC();
-  this->_response = msg::Msg(msg::REQ_APP_INFO_CRC_CALC, msg::RESP_ACK, 0);
+  this->_response = msg::Msg(msg::REQ_APP_INFO_CRC_CALC, msg::RES_OK, 0);
   msg::convertU32ToMsgData(crc_value_calc, this->_response.data);
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqAppCrcStrd() {
   uint32_t crc_value_stored = this->readAppCRCFromFlash();
-  this->_response = msg::Msg(msg::REQ_APP_INFO_CRC_STRD, msg::RESP_ACK, 0);
+  this->_response = msg::Msg(msg::REQ_APP_INFO_CRC_STRD, msg::RES_OK, 0);
   msg::convertU32ToMsgData(crc_value_stored, this->_response.data);
 }
 
@@ -297,7 +297,7 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqAppCrcStrd() {
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashReadWord(const msg::Msg& request) {
-  this->_response = msg::Msg(msg::REQ_FLASH_READ_WORD, msg::RESP_ERR, request.packet_id);
+  this->_response = msg::Msg(msg::REQ_FLASH_READ_WORD, msg::RES_ERR, request.packet_id);
 
   const uint32_t src_address = msg::convertMsgDataToU32(request.data);
   const bool address_inside_low_limit = (src_address >= FLASH_START);
@@ -308,9 +308,9 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashReadWord(const msg::Msg& re
     for (auto idx = 0U; idx < this->_response.data.size(); idx++) {
       this->_response.data[idx] = hwi::readByteFromFlash(src_address + idx);
     }
-    this->_response.response = msg::RESP_ACK;
+    this->_response.result = msg::RES_OK;
   } else {
-    this->_response.response = msg::RESP_ERR_INVLD_ARG;
+    this->_response.result = msg::RES_ERR_INVLD_ARG;
   }
 }
 
@@ -319,12 +319,12 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashReadWord(const msg::Msg& re
 FRANKLYBOOT_HANDLER_TEMPL void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferClear() {
   this->_page_buffer.fill({std::numeric_limits<uint8_t>::max()});
   this->_page_buffer_pos = 0U;
-  this->_response = msg::Msg(msg::REQ_PAGE_BUFFER_CLEAR, msg::RESP_ACK, 0);
+  this->_response = msg::Msg(msg::REQ_PAGE_BUFFER_CLEAR, msg::RES_OK, 0);
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferReadWord(const msg::Msg& request) {
-  this->_response = msg::Msg(msg::REQ_PAGE_BUFFER_READ_WORD, msg::RESP_ERR, request.packet_id);
+  this->_response = msg::Msg(msg::REQ_PAGE_BUFFER_READ_WORD, msg::RES_ERR, request.packet_id);
 
   const auto byte_idx = msg::convertMsgDataToU32(request.data);
   const auto byte_idx_valid = ((byte_idx + this->_response.data.size()) <= _page_buffer.size());
@@ -333,15 +333,15 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferReadWord(const msg::Ms
     for (auto idx = 0U; idx < this->_response.data.size(); idx++) {
       this->_response.data[idx] = _page_buffer.at(byte_idx + idx);
     }
-    this->_response.response = msg::RESP_ACK;
+    this->_response.result = msg::RES_OK;
   } else {
-    this->_response.response = msg::RESP_ERR_INVLD_ARG;
+    this->_response.result = msg::RES_ERR_INVLD_ARG;
   }
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferWriteWord(const msg::Msg& request) {
-  this->_response = msg::Msg(msg::REQ_PAGE_BUFFER_WRITE_WORD, msg::RESP_ERR, request.packet_id);
+  this->_response = msg::Msg(msg::REQ_PAGE_BUFFER_WRITE_WORD, msg::RES_ERR, request.packet_id);
   this->_response.data = request.data;
 
   const uint32_t data_size = sizeof(uint32_t);
@@ -357,21 +357,15 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferWriteWord(const msg::M
       this->_page_buffer_pos++;
     }
 
-    const bool page_buffer_full = (this->_page_buffer_pos >= this->_page_buffer.size());
-
-    if (page_buffer_full) {
-      this->_response.response = msg::RESP_ACK_PAGE_FULL;
-    } else {
-      this->_response.response = msg::RESP_ACK;
-    }
+    this->_response.result = msg::RES_OK;
   } else if (buffer_overflow) {
-    this->_response.response = msg::RESP_ERR_PAGE_FULL;
+    this->_response.result = msg::RES_ERR_PAGE_FULL;
   }
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferCalcCrc() {
-  this->_response = msg::Msg(msg::REQ_PAGE_BUFFER_CALC_CRC, msg::RESP_ACK, 0);
+  this->_response = msg::Msg(msg::REQ_PAGE_BUFFER_CALC_CRC, msg::RES_OK, 0);
 
   uint32_t page_buffer_address = getPageBufferAddress();
   const uint32_t crc_value = hwi::calculateCRC(page_buffer_address, _page_buffer.size());
@@ -381,7 +375,7 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferCalcCrc() {
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferWriteToFlash(const msg::Msg& request) {
-  this->_response = msg::Msg(msg::REQ_PAGE_BUFFER_WRITE_TO_FLASH, msg::RESP_ERR, 0);
+  this->_response = msg::Msg(msg::REQ_PAGE_BUFFER_WRITE_TO_FLASH, msg::RES_ERR, 0);
   this->_response.data = request.data;
 
   const uint32_t page_id = msg::convertMsgDataToU32(request.data);
@@ -395,11 +389,11 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferWriteToFlash(const msg
       const bool flash_result = hwi::writeDataBufferToFlash(address, page_id, _page_buffer.data(), _page_buffer.size());
 
       if (flash_result) {
-        this->_response.response = msg::RESP_ACK;
+        this->_response.result = msg::RES_OK;
       }
     }
   } else {
-    this->_response.response = msg::RESP_ERR_INVLD_ARG;
+    this->_response.result = msg::RES_ERR_INVLD_ARG;
   }
 }
 
@@ -407,7 +401,7 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqPageBufferWriteToFlash(const msg
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashWriteErasePage(const msg::Msg& request) {
-  this->_response = msg::Msg(msg::REQ_FLASH_WRITE_ERASE_PAGE, msg::RESP_ERR, request.packet_id);
+  this->_response = msg::Msg(msg::REQ_FLASH_WRITE_ERASE_PAGE, msg::RES_ERR, request.packet_id);
   this->_response.data = request.data;
 
   const uint32_t page_id = msg::convertMsgDataToU32(request.data);
@@ -415,15 +409,15 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashWriteErasePage(const msg::M
   const bool page_id_valid = (page_id >= FLASH_APP_FIRST_PAGE) && (page_id < FLASH_NUM_PAGES);
   if (page_id_valid) {
     const auto erase_result = hwi::eraseFlashPage(page_id);
-    this->_response.response = (erase_result) ? msg::RESP_ACK : msg::RESP_ERR;
+    this->_response.result = (erase_result) ? msg::RES_OK : msg::RES_ERR;
   } else {
-    this->_response.response = msg::RESP_ERR_INVLD_ARG;
+    this->_response.result = msg::RES_ERR_INVLD_ARG;
   }
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
 void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashWriteAppCrc(const msg::Msg& request) {
-  this->_response = msg::Msg(msg::REQ_FLASH_WRITE_APP_CRC, msg::RESP_ERR, request.packet_id);
+  this->_response = msg::Msg(msg::REQ_FLASH_WRITE_APP_CRC, msg::RES_ERR, request.packet_id);
 
   /* Read complete page to buffer */
   const uint32_t page_id = FLASH_NUM_PAGES - 1U;
@@ -448,7 +442,7 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqFlashWriteAppCrc(const msg::Msg&
     const bool flash_result = hwi::writeDataBufferToFlash(start_address, page_id, _page_buffer.data(), FLASH_PAGE_SIZE);
 
     if (flash_result) {
-      this->_response.response = msg::RESP_ACK;
+      this->_response.result = msg::RES_OK;
     }
   }
 

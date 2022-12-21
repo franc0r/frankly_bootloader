@@ -38,11 +38,11 @@ TEST_F(PageBufferTests, PageBufferInit) {  // NOLINT
 TEST_F(PageBufferTests, PageBufferClear) {
   constexpr msg::RequestType REQUEST = msg::REQ_PAGE_BUFFER_CLEAR;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
   constexpr msg::MsgData EXPECTED_DATA = {0U};
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
 
   /* Process request and get response */
   getHandle().processRequest(request_msg);
@@ -50,7 +50,7 @@ TEST_F(PageBufferTests, PageBufferClear) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
   }
@@ -64,7 +64,7 @@ TEST_F(PageBufferTests, PageBufferClear) {
 TEST_F(PageBufferTests, PageBufferReadWord) {  // NOLINT
   constexpr msg::RequestType REQUEST = msg::REQ_PAGE_BUFFER_READ_WORD;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
   constexpr uint32_t NUM_MSGS = (FLASH_PAGE_SIZE / 4U);
 
   /* Create random data for one page */
@@ -76,7 +76,7 @@ TEST_F(PageBufferTests, PageBufferReadWord) {  // NOLINT
   /* Write data */
   for (auto data_word_idx = 0U; data_word_idx < NUM_MSGS; data_word_idx++) {
     const auto packet_id = static_cast<uint8_t>(data_word_idx & 0xFF);
-    msg::Msg request = msg::Msg(msg::REQ_PAGE_BUFFER_WRITE_WORD, msg::RESP_NONE, packet_id);
+    msg::Msg request = msg::Msg(msg::REQ_PAGE_BUFFER_WRITE_WORD, msg::RES_NONE, packet_id);
 
     request.data[0] = data_lst.at((data_word_idx * 4) + 0U);
     request.data[1] = data_lst.at((data_word_idx * 4) + 1U);
@@ -89,7 +89,7 @@ TEST_F(PageBufferTests, PageBufferReadWord) {  // NOLINT
   /* Read first 4 valid bytes*/
   {
     constexpr uint32_t BYTE_IDX = 0;
-    msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+    msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
     msg::convertU32ToMsgData(BYTE_IDX, request_msg.data);
 
     /* Process request and get response */
@@ -98,7 +98,7 @@ TEST_F(PageBufferTests, PageBufferReadWord) {  // NOLINT
 
     /* Check response */
     EXPECT_EQ(response.request, REQUEST);
-    EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+    EXPECT_EQ(response.result, EXPECTED_RESPONSE);
 
     EXPECT_EQ(response.data[0], data_lst.at(0));
     EXPECT_EQ(response.data[1], data_lst.at(1));
@@ -109,7 +109,7 @@ TEST_F(PageBufferTests, PageBufferReadWord) {  // NOLINT
   /* Read last 4 valid bytes*/
   {
     constexpr uint32_t BYTE_IDX = FLASH_PAGE_SIZE - 4U;
-    msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+    msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
     msg::convertU32ToMsgData(BYTE_IDX, request_msg.data);
 
     /* Process request and get response */
@@ -118,7 +118,7 @@ TEST_F(PageBufferTests, PageBufferReadWord) {  // NOLINT
 
     /* Check response */
     EXPECT_EQ(response.request, REQUEST);
-    EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+    EXPECT_EQ(response.result, EXPECTED_RESPONSE);
 
     EXPECT_EQ(response.data[0], data_lst.at(data_lst.size() - 4U));
     EXPECT_EQ(response.data[1], data_lst.at(data_lst.size() - 3U));
@@ -130,10 +130,10 @@ TEST_F(PageBufferTests, PageBufferReadWord) {  // NOLINT
 TEST_F(PageBufferTests, PageBufferReadWordInvalidByteIdx) {  // NOLINT
   constexpr msg::RequestType REQUEST = msg::REQ_PAGE_BUFFER_READ_WORD;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR_INVLD_ARG;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_ERR_INVLD_ARG;
   constexpr uint32_t BYTE_IDX = FLASH_PAGE_SIZE - 3U;
 
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   msg::convertU32ToMsgData(BYTE_IDX, request_msg.data);
 
   /* Process request and get response */
@@ -142,17 +142,17 @@ TEST_F(PageBufferTests, PageBufferReadWordInvalidByteIdx) {  // NOLINT
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
 }
 
 TEST_F(PageBufferTests, PageBufferWriteOneWord) {  // NOLINT
   constexpr msg::RequestType REQUEST = msg::REQ_PAGE_BUFFER_WRITE_WORD;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
   constexpr msg::MsgData DATA = {1U, 2U, 3U, 4U};
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   request_msg.data = DATA;
 
   /* Process request and get response */
@@ -161,7 +161,7 @@ TEST_F(PageBufferTests, PageBufferWriteOneWord) {  // NOLINT
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
 
   for (auto idx = 0U; idx < DATA.size(); idx++) {
     EXPECT_EQ(getHandle().getByteFromPageBuffer(idx), DATA[idx]);
@@ -180,7 +180,7 @@ TEST_F(PageBufferTests, PageBufferWritePage) {  // NOLINT
 
   for (auto data_word_idx = 0U; data_word_idx < NUM_MSGS; data_word_idx++) {
     const auto packet_id = static_cast<uint8_t>(data_word_idx & 0xFF);
-    msg::Msg request = msg::Msg(REQUEST, msg::RESP_NONE, packet_id);
+    msg::Msg request = msg::Msg(REQUEST, msg::RES_NONE, packet_id);
 
     request.data[0] = data_lst.at((data_word_idx * 4) + 0U);
     request.data[1] = data_lst.at((data_word_idx * 4) + 1U);
@@ -197,12 +197,7 @@ TEST_F(PageBufferTests, PageBufferWritePage) {  // NOLINT
     EXPECT_EQ(response.data[2], request.data[2]);
     EXPECT_EQ(response.data[3], request.data[3]);
 
-    const bool last_word_in_buffer = (data_word_idx >= ((FLASH_PAGE_SIZE / 4) - 1U));
-    if (last_word_in_buffer) {
-      EXPECT_EQ(response.response, msg::RESP_ACK_PAGE_FULL);
-    } else {
-      EXPECT_EQ(response.response, msg::RESP_ACK);
-    }
+    EXPECT_EQ(response.result, msg::RES_OK);
   }
 
   /* Check if data is written correctly to buffer */
@@ -217,7 +212,7 @@ TEST_F(PageBufferTests, PageBufferWritePageOverflow) {  // NOLINT
 
   for (auto data_word_idx = 0U; data_word_idx < (NUM_MSGS + 1U); data_word_idx++) {
     const auto packet_id = static_cast<uint8_t>(data_word_idx & 0xFF);
-    msg::Msg request = msg::Msg(REQUEST, msg::RESP_NONE, packet_id);
+    msg::Msg request = msg::Msg(REQUEST, msg::RES_NONE, packet_id);
 
     getHandle().processRequest(request);
 
@@ -225,22 +220,19 @@ TEST_F(PageBufferTests, PageBufferWritePageOverflow) {  // NOLINT
     EXPECT_EQ(response.request, REQUEST);
     EXPECT_EQ(response.packet_id, packet_id);
 
-    const bool last_word_in_buffer = ((data_word_idx + 1U) == NUM_MSGS);
     const bool expect_overflow = ((data_word_idx) == NUM_MSGS);
-    if (last_word_in_buffer) {
-      EXPECT_EQ(response.response, msg::RESP_ACK_PAGE_FULL);
-    } else if (expect_overflow) {
-      EXPECT_EQ(response.response, msg::RESP_ERR_PAGE_FULL);
+    if (expect_overflow) {
+      EXPECT_EQ(response.result, msg::RES_ERR_PAGE_FULL);
 
     } else {
-      EXPECT_EQ(response.response, msg::RESP_ACK);
+      EXPECT_EQ(response.result, msg::RES_OK);
     }
   }
 }
 
 TEST_F(PageBufferTests, PageBufferPacketIdError) {  // NOLINT
   constexpr msg::RequestType REQUEST = msg::REQ_PAGE_BUFFER_WRITE_WORD;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_ERR;
   constexpr uint32_t NUM_MSGS = (FLASH_PAGE_SIZE / 4U);
 
   const uint32_t packet_error_idx = rand() % NUM_MSGS;
@@ -253,7 +245,7 @@ TEST_F(PageBufferTests, PageBufferPacketIdError) {  // NOLINT
       packet_id -= 1;
     }
 
-    msg::Msg request = msg::Msg(REQUEST, msg::RESP_NONE, packet_id);
+    msg::Msg request = msg::Msg(REQUEST, msg::RES_NONE, packet_id);
 
     getHandle().processRequest(request);
 
@@ -261,7 +253,7 @@ TEST_F(PageBufferTests, PageBufferPacketIdError) {  // NOLINT
 
     if (set_wrong_packet_id) {
       EXPECT_EQ(response.request, REQUEST);
-      EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+      EXPECT_EQ(response.result, EXPECTED_RESPONSE);
       EXPECT_EQ(response.packet_id, packet_id);
     }
   }
@@ -274,7 +266,7 @@ TEST_F(PageBufferTests, PageBufferCheckDataCleared) {  // NOLINT
   /* Fill page buffer */
   for (auto data_word_idx = 0U; data_word_idx < NUM_MSGS; data_word_idx++) {
     auto packet_id = static_cast<uint8_t>(data_word_idx & 0xFF);
-    msg::Msg request = msg::Msg(msg::REQ_PAGE_BUFFER_WRITE_WORD, msg::RESP_NONE, packet_id);
+    msg::Msg request = msg::Msg(msg::REQ_PAGE_BUFFER_WRITE_WORD, msg::RES_NONE, packet_id);
     request.data = msg::MsgData({TEST_BYTE, TEST_BYTE, TEST_BYTE, TEST_BYTE});
     getHandle().processRequest(request);
   }
@@ -285,12 +277,12 @@ TEST_F(PageBufferTests, PageBufferCheckDataCleared) {  // NOLINT
   }
 
   /* Clear page buffer */
-  const msg::Msg request = msg::Msg(msg::REQ_PAGE_BUFFER_CLEAR, msg::RESP_NONE, 0);
+  const msg::Msg request = msg::Msg(msg::REQ_PAGE_BUFFER_CLEAR, msg::RES_NONE, 0);
   getHandle().processRequest(request);
   const msg::Msg response = getHandle().getResponse();
 
   EXPECT_EQ(response.request, msg::REQ_PAGE_BUFFER_CLEAR);
-  EXPECT_EQ(response.response, msg::RESP_ACK);
+  EXPECT_EQ(response.result, msg::RES_OK);
 
   /* Check if buffer is cleared */
   for (auto byte_idx = 0U; byte_idx < FLASH_PAGE_SIZE; byte_idx++) {
@@ -301,14 +293,14 @@ TEST_F(PageBufferTests, PageBufferCheckDataCleared) {  // NOLINT
 TEST_F(PageBufferTests, PageBufferCalcCRC) {  // NOLINT
   constexpr msg::RequestType REQUEST = msg::REQ_PAGE_BUFFER_CALC_CRC;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
   constexpr msg::MsgData EXPECTED_DATA = {0x12, 0x34, 0x35, 0x78};
 
   /* Set CRC value */
   setCRCResult(msg::convertMsgDataToU32(EXPECTED_DATA));
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   request_msg.data = EXPECTED_DATA;
 
   /* Process request and get response */
@@ -317,7 +309,7 @@ TEST_F(PageBufferTests, PageBufferCalcCRC) {  // NOLINT
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
 
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
@@ -327,11 +319,11 @@ TEST_F(PageBufferTests, PageBufferCalcCRC) {  // NOLINT
 TEST_F(PageBufferTests, PageBufferWriteToFlashInvldAddress) {  // NOLINT
   constexpr msg::RequestType REQUEST = msg::REQ_PAGE_BUFFER_WRITE_TO_FLASH;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_ERR;
   constexpr msg::MsgData EXPECTED_DATA = {0x01, 0x00, 0x00, 0x00};
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   request_msg.data = EXPECTED_DATA;
 
   /* Process request and get response */
@@ -340,7 +332,7 @@ TEST_F(PageBufferTests, PageBufferWriteToFlashInvldAddress) {  // NOLINT
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
 
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
@@ -350,11 +342,11 @@ TEST_F(PageBufferTests, PageBufferWriteToFlashInvldAddress) {  // NOLINT
 TEST_F(PageBufferTests, PageBufferWriteToFlashInvldAddress2) {  // NOLINT
   constexpr msg::RequestType REQUEST = msg::REQ_PAGE_BUFFER_WRITE_TO_FLASH;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR_INVLD_ARG;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_ERR_INVLD_ARG;
   constexpr msg::MsgData EXPECTED_DATA = {0xFF, 0x00, 0x00, 0x00};
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   request_msg.data = EXPECTED_DATA;
 
   /* Process request and get response */
@@ -363,7 +355,7 @@ TEST_F(PageBufferTests, PageBufferWriteToFlashInvldAddress2) {  // NOLINT
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
 
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
@@ -373,13 +365,13 @@ TEST_F(PageBufferTests, PageBufferWriteToFlashInvldAddress2) {  // NOLINT
 TEST_F(PageBufferTests, PageBufferWriteToFlash) {  // NOLINT
   constexpr msg::RequestType REQUEST = msg::REQ_PAGE_BUFFER_WRITE_TO_FLASH;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
   constexpr msg::MsgData EXPECTED_DATA = {0x04, 0x00, 0x00, 0x00};
   setErasePageResult(true);
   setWriteToFlashResult(true);
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   request_msg.data = EXPECTED_DATA;
 
   /* Process request and get response */
@@ -388,7 +380,7 @@ TEST_F(PageBufferTests, PageBufferWriteToFlash) {  // NOLINT
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
 
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
@@ -398,12 +390,12 @@ TEST_F(PageBufferTests, PageBufferWriteToFlash) {  // NOLINT
 TEST_F(PageBufferTests, PageBufferWriteToFlashHWError) {  // NOLINT
   constexpr msg::RequestType REQUEST = msg::REQ_PAGE_BUFFER_WRITE_TO_FLASH;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_ERR;
   constexpr msg::MsgData EXPECTED_DATA = {0x04, 0x00, 0x00, 0x00};
   setWriteToFlashResult(false);
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   request_msg.data = EXPECTED_DATA;
 
   /* Process request and get response */
@@ -412,7 +404,7 @@ TEST_F(PageBufferTests, PageBufferWriteToFlashHWError) {  // NOLINT
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
 
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));

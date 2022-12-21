@@ -30,20 +30,18 @@ namespace franklyboot {
 namespace msg {
 
 /**
- * @brief Response send from device to host
+ * @brief Result of request send as response
  */
-enum ResponseType : uint8_t {
-  RESP_NONE = 0x00U,  //!< Unused / ignored
-  RESP_ACK = 0x01U,   //!< Acknowledge
+enum ResultType : uint8_t {
+  RES_NONE = 0x00U,  //!< No result / not specified
+  RES_OK = 0x01U,    //!< Message was processed successfully / result ok
 
-  RESP_ERR = 0xFEU,                //!< General error
-  RESP_UNKNOWN_REQ = 0xFDU,        //!< Unknow request type
-  RESP_ERR_NOT_SUPPORTED = 0xFCU,  //!< Error, command known but not supported
-  RESP_ERR_CRC_INVLD = 0xFBU,      //!< Error, CRC check failed
-  RESP_ACK_PAGE_FULL = 0xFAU,      //!< Acknowledge and info that page buffer is full
-  RESP_ERR_PAGE_FULL = 0xF9U,      //!< Error, word not writable page buffer is full
-  RESP_ERR_INVLD_ARG = 0xF8U,      //!< Error, invalid argument (out of range, ...)
-
+  RES_ERR = 0xFEU,                //!< General error
+  RES_ERR_UNKNOWN_REQ = 0xFDU,    //!< Unknow request type
+  RES_ERR_NOT_SUPPORTED = 0xFCU,  //!< Error, command known but not supported
+  RES_ERR_CRC_INVLD = 0xFBU,      //!< Error, CRC check failed
+  RES_ERR_PAGE_FULL = 0xFAU,      //!< Error, word not writable page buffer is full
+  RES_ERR_INVLD_ARG = 0xF9U,      //!< Error, invalid argument (out of range, ...)
 };
 
 /**
@@ -97,11 +95,11 @@ using MsgData = std::array<uint8_t, 4U>;
  */
 struct Msg {
   Msg() = default;
-  Msg(RequestType req, ResponseType resp, uint8_t packet_id)
-      : request(req), response(resp), packet_id(packet_id), data({0}) {}
+  Msg(RequestType req, ResultType res, uint8_t packet_id)
+      : request(req), result(res), packet_id(packet_id), data({0}) {}
 
   RequestType request;
-  ResponseType response;
+  ResultType result;
   uint8_t packet_id;
   MsgData data;  // Maybe union and use std::array
 };

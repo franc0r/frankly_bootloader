@@ -31,7 +31,7 @@ class FlashReadTests : public TestHelper {
 TEST_F(FlashReadTests, readByteFromFlash) {
   constexpr msg::RequestType REQUEST = msg::REQ_FLASH_READ_WORD;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
   constexpr uint32_t READ_ADDRESS = 0x08000423U;
 
   /* Init flash with some values */
@@ -42,7 +42,7 @@ TEST_F(FlashReadTests, readByteFromFlash) {
   }
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   msg::convertU32ToMsgData(READ_ADDRESS, request_msg.data);
 
   /* Process request and get response */
@@ -51,7 +51,7 @@ TEST_F(FlashReadTests, readByteFromFlash) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     const auto expected_value = static_cast<uint8_t>((READ_ADDRESS - FLASH_START) + idx);
     EXPECT_EQ(response.data.at(idx), expected_value);
@@ -61,11 +61,11 @@ TEST_F(FlashReadTests, readByteFromFlash) {
 TEST_F(FlashReadTests, readByteFromFlashInvldAddress) {
   constexpr msg::RequestType REQUEST = msg::REQ_FLASH_READ_WORD;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR_INVLD_ARG;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_ERR_INVLD_ARG;
   constexpr uint32_t READ_ADDRESS = 0x08000000U - 1U;
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   msg::convertU32ToMsgData(READ_ADDRESS, request_msg.data);
 
   /* Process request and get response */
@@ -74,17 +74,17 @@ TEST_F(FlashReadTests, readByteFromFlashInvldAddress) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
 }
 
 TEST_F(FlashReadTests, readByteFromFlashInvldAddress2) {
   constexpr msg::RequestType REQUEST = msg::REQ_FLASH_READ_WORD;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ERR_INVLD_ARG;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_ERR_INVLD_ARG;
   constexpr uint32_t READ_ADDRESS = FLASH_START + FLASH_SIZE - 3U;
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
   msg::convertU32ToMsgData(READ_ADDRESS, request_msg.data);
 
   /* Process request and get response */
@@ -93,5 +93,5 @@ TEST_F(FlashReadTests, readByteFromFlashInvldAddress2) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
 }

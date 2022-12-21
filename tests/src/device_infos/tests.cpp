@@ -30,11 +30,11 @@ class DeviceInfoTests : public TestHelper {
 TEST_F(DeviceInfoTests, BootloaderVersion) {
   constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_BOOTLOADER_VERSION;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
   constexpr msg::MsgData EXPECTED_DATA = {version::VERSION[0], version::VERSION[1], version::VERSION[2], 0};
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
 
   /* Process request and get response */
   getHandle().processRequest(request_msg);
@@ -42,7 +42,7 @@ TEST_F(DeviceInfoTests, BootloaderVersion) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
   }
@@ -54,7 +54,7 @@ TEST_F(DeviceInfoTests, BootloaderCRC) {
   constexpr uint32_t CRC_VALUE = 0x1AC0BAAF;
   constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_BOOTLOADER_CRC;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
   constexpr msg::MsgData EXPECTED_DATA = {
       static_cast<uint8_t>(CRC_VALUE),
       static_cast<uint8_t>(CRC_VALUE >> 8U),
@@ -65,7 +65,7 @@ TEST_F(DeviceInfoTests, BootloaderCRC) {
   this->setCRCResult(CRC_VALUE);
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
 
   /* Process request and get response */
   getHandle().processRequest(request_msg);
@@ -73,7 +73,7 @@ TEST_F(DeviceInfoTests, BootloaderCRC) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     EXPECT_EQ(response.data.at(idx), EXPECTED_DATA.at(idx));
   }
@@ -84,10 +84,10 @@ TEST_F(DeviceInfoTests, BootloaderCRC) {
 TEST_F(DeviceInfoTests, VendorID) {
   constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_VID;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
 
   /* Process request and get response */
   getHandle().processRequest(request_msg);
@@ -95,7 +95,7 @@ TEST_F(DeviceInfoTests, VendorID) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     const auto expected_val = static_cast<uint8_t>(this->getVendorID() >> (8U * idx));
     EXPECT_EQ(response.data.at(idx), expected_val);
@@ -105,10 +105,10 @@ TEST_F(DeviceInfoTests, VendorID) {
 TEST_F(DeviceInfoTests, ProductID) {
   constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_PID;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
 
   /* Process request and get response */
   getHandle().processRequest(request_msg);
@@ -116,7 +116,7 @@ TEST_F(DeviceInfoTests, ProductID) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     const auto expected_val = static_cast<uint8_t>(this->getProductID() >> (8U * idx));
     EXPECT_EQ(response.data.at(idx), expected_val);
@@ -126,10 +126,10 @@ TEST_F(DeviceInfoTests, ProductID) {
 TEST_F(DeviceInfoTests, ProductionDate) {
   constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_PRD;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
 
   /* Process request and get response */
   getHandle().processRequest(request_msg);
@@ -137,7 +137,7 @@ TEST_F(DeviceInfoTests, ProductionDate) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     const auto expected_val = static_cast<uint8_t>(this->getProductionDate() >> (8U * idx));
     EXPECT_EQ(response.data.at(idx), expected_val);
@@ -147,10 +147,10 @@ TEST_F(DeviceInfoTests, ProductionDate) {
 TEST_F(DeviceInfoTests, UniqueID) {
   constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_UID;
   constexpr uint8_t PACKET_ID = 0;
-  constexpr msg::ResponseType EXPECTED_RESPONSE = msg::RESP_ACK;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
 
   /* Create request */
-  msg::Msg request_msg = msg::Msg(REQUEST, msg::RESP_NONE, PACKET_ID);
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
 
   /* Process request and get response */
   getHandle().processRequest(request_msg);
@@ -158,7 +158,7 @@ TEST_F(DeviceInfoTests, UniqueID) {
 
   /* Check response */
   EXPECT_EQ(response.request, REQUEST);
-  EXPECT_EQ(response.response, EXPECTED_RESPONSE);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   for (auto idx = 0U; idx < response.data.size(); idx++) {
     const auto expected_val = static_cast<uint8_t>(this->getUniqueID() >> (8U * idx));
     EXPECT_EQ(response.data.at(idx), expected_val);
