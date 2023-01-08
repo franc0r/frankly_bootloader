@@ -475,7 +475,8 @@ FRANKLYBOOT_HANDLER_TEMPL
 [[nodiscard]] uint32_t FRANKLYBOOT_HANDLER_TEMPL_PREFIX::calcAppCRC() const {
   /* Calculate CRC value */
   const uint32_t app_flash_ptr = FLASH_APP_ADDRESS;
-  const uint32_t crc_value_calc = hwi::calculateCRC(app_flash_ptr, (FLASH_APP_NUM_PAGES * FLASH_PAGE_SIZE));
+  const uint32_t app_flash_size = (FLASH_APP_NUM_PAGES * FLASH_PAGE_SIZE) - 4U;
+  const uint32_t crc_value_calc = hwi::calculateCRC(app_flash_ptr, app_flash_size);
   return crc_value_calc;
 }
 
