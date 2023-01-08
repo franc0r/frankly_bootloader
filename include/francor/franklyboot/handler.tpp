@@ -162,6 +162,17 @@ FRANKLYBOOT_HANDLER_TEMPL
   return this->_page_buffer.at(byte_idx);
 }
 
+FRANKLYBOOT_HANDLER_TEMPL
+[[nodiscard]] bool FRANKLYBOOT_HANDLER_TEMPL_PREFIX::isAppValid() const {
+  /* Read CRC value from flash */
+  const uint32_t crc_value_stored = this->readAppCRCFromFlash();
+
+  /* Calculate CRC value */
+  const uint32_t crc_value_calc = this->calcAppCRC();
+
+  return (crc_value_stored == crc_value_calc);
+}
+
 // Basic Info Requests ------------------------------------------------------------------------------------------------
 
 FRANKLYBOOT_HANDLER_TEMPL
@@ -193,7 +204,7 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqStartApp(const msg::Msg& request
 
   const bool start_app_safe = (msg::convertMsgDataToU32(request.data) != START_APP_UNSAFE_WORD);
   if (start_app_safe) {
-    const bool is_crc_valid = isAppCRCValid();
+    const bool is_crc_valid = isAppValid();
     if (is_crc_valid) {
       this->_cmd_buffer = CommandBuffer::START_APP;
       this->_response.result = msg::RES_OK;
@@ -494,16 +505,6 @@ FRANKLYBOOT_HANDLER_TEMPL
   return crc_value_stored;
 }
 
-FRANKLYBOOT_HANDLER_TEMPL
-[[nodiscard]] bool FRANKLYBOOT_HANDLER_TEMPL_PREFIX::isAppCRCValid() const {
-  /* Read CRC value from flash */
-  const uint32_t crc_value_stored = this->readAppCRCFromFlash();
-
-  /* Calculate CRC value */
-  const uint32_t crc_value_calc = this->calcAppCRC();
-
-  return (crc_value_stored == crc_value_calc);
-}
 }; /* namespace franklyboot */
 
 #endif /* FRANCOR_FRANKLYBOOT_HANDLER_TPP_H_ */

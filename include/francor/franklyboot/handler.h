@@ -75,6 +75,14 @@ class Handler {
    */
   auto getResponse() const;
 
+  /**
+   * @brief Checks if a valid app is available in flash
+   *
+   * Compares the stored CRC with the calculated CRC of the flash
+   * If both are equal the flashed app is valid
+   */
+  [[nodiscard]] bool isAppValid() const;
+
   /* Getters */
   [[nodiscard]] auto getFlashStartAddress() const { return FLASH_START; }
   [[nodiscard]] auto getFlashSize() const { return FLASH_SIZE; }
@@ -128,7 +136,6 @@ class Handler {
   [[nodiscard]] uint32_t getPageBufferAddress() const;
   [[nodiscard]] uint32_t calcAppCRC() const;
   [[nodiscard]] uint32_t readAppCRCFromFlash() const;
-  [[nodiscard]] bool isAppCRCValid() const;
 
   /** \brief Command buffer for commands which cannot be processed immediatly */
   CommandBuffer _cmd_buffer = {CommandBuffer::NONE};
