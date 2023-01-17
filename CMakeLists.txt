@@ -18,3 +18,4 @@ target_include_directories(${PROJECT_NAME}
 enable_testing()
 
 add_subdirectory(tests)
+add_subdirectory(utils/device_sim_api)
