@@ -79,3 +79,58 @@ TEST(BasicTests, convertMsgDataToU32) {
 
   EXPECT_EQ(msg_value, EXPECTED_VALUE);
 }
+
+/**
+ * @brief Check if msg is correctly converted to a raw byte string
+ */
+TEST(BasicTests, convertMsgToRawData) {
+  constexpr auto REQUEST = msg::RequestType::REQ_APP_INFO_CRC_CALC;
+  constexpr auto RESULT = msg::ResultType::RES_ERR_INVLD_ARG;
+  constexpr auto PACKET_ID = 26;
+
+  auto msg = msg::Msg(REQUEST, RESULT, PACKET_ID);
+  msg.data.at(0) = 0x01;
+  msg.data.at(1) = 0x02;
+  msg.data.at(2) = 0x03;
+  msg.data.at(3) = 0x04;
+
+  const auto raw_data = msg::convertMsgToBytes(msg);
+
+  EXPECT_EQ(raw_data.at(0), static_cast<uint8_t>(REQUEST));
+  EXPECT_EQ(raw_data.at(1), static_cast<uint8_t>(REQUEST >> 8));
+  EXPECT_EQ(raw_data.at(2), static_cast<uint8_t>(RESULT));
+  EXPECT_EQ(raw_data.at(3), static_cast<uint8_t>(PACKET_ID));
+  EXPECT_EQ(raw_data.at(4), msg.data.at(0));
+  EXPECT_EQ(raw_data.at(5), msg.data.at(1));
+  EXPECT_EQ(raw_data.at(6), msg.data.at(2));
+  EXPECT_EQ(raw_data.at(7), msg.data.at(3));
+}
+
+/**
+ * @brief Check if msg is correctly converted to a raw byte string
+ */
+TEST(BasicTests, convertRawDataToMsg) {
+  constexpr auto REQUEST = msg::RequestType::REQ_APP_INFO_CRC_CALC;
+  constexpr auto RESULT = msg::ResultType::RES_ERR_INVLD_ARG;
+  constexpr auto PACKET_ID = 26;
+
+  msg::MsgRaw msg_raw;
+  msg_raw.at(0) = 0x02;
+  msg_raw.at(1) = 0x03;
+  msg_raw.at(2) = 0xF9;
+  msg_raw.at(3) = 26;
+  msg_raw.at(4) = 1;
+  msg_raw.at(5) = 2;
+  msg_raw.at(6) = 3;
+  msg_raw.at(7) = 4;
+
+  const auto msg = msg::convertBytesToMsg(msg_raw);
+
+  EXPECT_EQ(msg.request, REQUEST);
+  EXPECT_EQ(msg.result, RESULT);
+  EXPECT_EQ(msg.packet_id, PACKET_ID);
+  EXPECT_EQ(msg.data.at(0), 1);
+  EXPECT_EQ(msg.data.at(1), 2);
+  EXPECT_EQ(msg.data.at(2), 3);
+  EXPECT_EQ(msg.data.at(3), 4);
+}

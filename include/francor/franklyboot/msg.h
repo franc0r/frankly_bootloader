@@ -88,6 +88,7 @@ enum RequestType : uint16_t {
 };
 
 /** \brief Definition of the MsgData representation */
+using MsgRaw = std::array<uint8_t, 8U>;
 using MsgData = std::array<uint8_t, 4U>;
 
 /**
@@ -119,6 +120,16 @@ void convertU32ToMsgData(uint32_t data, msg::MsgData& msg_data);
  * @return uint32_t Deserialized word
  */
 uint32_t convertMsgDataToU32(const msg::MsgData& msg_data);
+
+/**
+ * @brief Converts a byte array to a message struct
+ */
+msg::Msg convertBytesToMsg(const msg::MsgRaw& msg_raw);
+
+/**
+ * @brief Converts a msg to a byte array
+ */
+msg::MsgRaw convertMsgToBytes(const msg::Msg& msg);
 
 }; /* namespace msg */
 
