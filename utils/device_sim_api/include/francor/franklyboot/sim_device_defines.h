@@ -23,7 +23,7 @@ constexpr uint32_t BROADCAST_ID = 0x780;
 
 constexpr uint32_t VENDOR_ID = {0x46524352};
 constexpr uint32_t PRODUCT_ID = {0x054455354};
-constexpr uint32_t PRODUCTION_DATE = {0x00000000U};
+constexpr uint32_t PRODUCTION_DATE = {0xFFFFFFFFU};
 
 constexpr uint32_t FLASH_START_ADDR = {0x08000000U};
 constexpr uint32_t FLASH_APP_FIRST_PAGE = {4U};

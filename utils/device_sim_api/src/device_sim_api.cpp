@@ -42,18 +42,23 @@ class SimDevice {
   void processRequest() {
     if (_new_msg || _new_broadcast_msg) {
       _handler.processRequest(_request_msg);
+      _new_response_msg = _new_msg;
+      _new_broadcast_response_msg = _new_broadcast_msg;
+
+      _new_msg = false;
+      _new_broadcast_msg = false;
     }
   }
 
   [[nodiscard]] msg::Msg getResponseMsg() {
-    _new_msg = false;
-    _new_broadcast_msg = false;
+    _new_response_msg = false;
+    _new_broadcast_response_msg = false;
     return _handler.getResponse();
   }
 
   [[nodiscard]] uint8_t getNodeId() const { return _node_id; }
-  [[nodiscard]] bool isBroadcastResponseAvl() const { return _new_broadcast_msg; }
-  [[nodiscard]] bool isNodeResponseAvl() const { return _new_msg; }
+  [[nodiscard]] bool isBroadcastResponseAvl() const { return _new_broadcast_response_msg; }
+  [[nodiscard]] bool isNodeResponseAvl() const { return _new_response_msg; }
 
  private:
   const uint8_t _node_id;  //!< Node ID of the device
@@ -61,6 +66,9 @@ class SimDevice {
   msg::Msg _request_msg;              //!< Last request msg
   bool _new_msg = {false};            //!< Flag if new request msg is available
   bool _new_broadcast_msg = {false};  //!< Flag if new request msg is a broadcast msg
+
+  bool _new_response_msg = {false};            //!< Flash indicating that new response is avl
+  bool _new_broadcast_response_msg = {false};  //!< Flag indicating that new broadcast response is avl
 
   SimDeviceHandler _handler;  //!< Handler for the device
 };
@@ -120,29 +128,34 @@ extern "C" void SIM_updateDevices() {
 }
 
 /** \brief Get broadcast response msg */
-extern "C" void SIM_getBroadcastResponseMsg(uint8_t* raw_msg_ptr) {
+extern "C" bool SIM_getBroadcastResponseMsg(uint8_t* node_id, uint8_t* raw_msg_ptr) {
   // Loop through all devices and send message to specified node
   for (auto& device : sim_device_lst) {
     if (device.isBroadcastResponseAvl()) {
       const auto response_msg = device.getResponseMsg();
       const auto response_msg_raw = msg::convertMsgToBytes(response_msg);
       std::memcpy(raw_msg_ptr, response_msg_raw.data(), response_msg_raw.size());
-      return;
+      (*node_id) = device.getNodeId();
+      return true;
     }
   }
+
+  return false;
 }
 
 /** \brief Get node specific response msg */
-extern "C" void SIM_getNodeResponseMsg(const uint8_t node_id, uint8_t* raw_msg_ptr) {
+extern "C" bool SIM_getNodeResponseMsg(const uint8_t node_id, uint8_t* raw_msg_ptr) {
   // Loop through all devices and send message to specified node
   for (auto& device : sim_device_lst) {
     if (node_id == device.getNodeId() && device.isNodeResponseAvl()) {
       const auto response_msg = device.getResponseMsg();
       const auto response_msg_raw = msg::convertMsgToBytes(response_msg);
       std::memcpy(raw_msg_ptr, response_msg_raw.data(), response_msg_raw.size());
-      return;
+      return true;
     }
   }
+
+  return false;
 }
 
 // Device HWI ---------------------------------------------------------------------------------------------------------

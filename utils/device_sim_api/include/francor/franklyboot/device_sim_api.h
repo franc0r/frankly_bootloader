@@ -40,10 +40,10 @@ extern "C" void SIM_sendNodeMsg(uint8_t node_id, uint8_t* const raw_msg_ptr);
 extern "C" void SIM_updateDevices();
 
 /** \brief Get broadcast response msg */
-extern "C" void SIM_getBroadcastResponseMsg(uint8_t* raw_msg_ptr);
+extern "C" bool SIM_getBroadcastResponseMsg(uint8_t* node_id, uint8_t* raw_msg_ptr);
 
 /** \brief Get node specific response msg */
-extern "C" void SIM_getNodeResponseMsg(uint8_t node_id, uint8_t* raw_msg_ptr);
+extern "C" bool SIM_getNodeResponseMsg(uint8_t node_id, uint8_t* raw_msg_ptr);
 
 #endif /* __cplusplus */
 
