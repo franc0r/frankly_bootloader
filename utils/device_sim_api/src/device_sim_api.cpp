@@ -97,7 +97,7 @@ extern "C" bool SIM_addDevice(uint8_t node_id) {
 extern "C" uint32_t SIM_getDeviceCount() { return static_cast<uint32_t>(sim_device_lst.size()); }
 
 extern "C" void SIM_sendBroadcastMsg(uint8_t* const raw_msg_ptr) {
-  msg::MsgRaw request_msg_raw;
+  msg::MsgRaw request_msg_raw = msg::MsgRaw();
   std::memcpy(request_msg_raw.data(), raw_msg_ptr, request_msg_raw.size());
   const auto request_msg = msg::convertBytesToMsg(request_msg_raw);
 
@@ -108,7 +108,7 @@ extern "C" void SIM_sendBroadcastMsg(uint8_t* const raw_msg_ptr) {
 }
 
 extern "C" void SIM_sendNodeMsg(const uint8_t node_id, uint8_t* const raw_msg_ptr) {
-  msg::MsgRaw request_msg_raw;
+  msg::MsgRaw request_msg_raw = msg::MsgRaw();
   std::memcpy(request_msg_raw.data(), raw_msg_ptr, request_msg_raw.size());
   const auto request_msg = msg::convertBytesToMsg(request_msg_raw);
 
