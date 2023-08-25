@@ -107,7 +107,7 @@ class Handler {
   void handleReqInfoVendorID();
   void handleReqInfoProductID();
   void handleReqInfoProductionDate();
-  void handleReqInfoUniqueID();
+  void handleReqInfoUniqueID(msg::RequestType request);
 
   /* Flash information */
   void handleReqFlashStartAddress();

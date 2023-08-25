@@ -35,8 +35,8 @@ void resetDevice();
 /** \brief Get 32-bit production date (seconds since 1.12.2023) */
 [[nodiscard]] uint32_t getProductionDate();
 
-/** \brief Get 32-bit unique ID */
-[[nodiscard]] uint32_t getUniqueID();
+/** \brief Get address of 128-bit unique ID */
+[[nodiscard]] uint32_t getUniqueIDWord(uint32_t idx);
 
 /** \brief Calculates the 32-Bit crc value over the specified data array */
 [[nodiscard]] uint32_t calculateCRC(uint32_t src_address, uint32_t num_bytes);

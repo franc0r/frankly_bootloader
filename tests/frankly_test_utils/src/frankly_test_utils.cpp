@@ -36,7 +36,7 @@ void TestHelper::setVendorID(uint32_t value) { _vendor_id = value; }
 
 void TestHelper::setProductID(uint32_t value) { _product_id = value; }
 void TestHelper::setProductionDate(uint32_t value) { _production_date = value; }
-void TestHelper::setUniqueID(uint32_t value) { _unique_id = value; }
+void TestHelper::setUniqueIDWord(const uint32_t idx, const uint32_t value) { _unique_id[idx] = value; }
 void TestHelper::setCRCResult(uint32_t value) { _crc_calc_result = value; }
 
 void TestHelper::setByteInFlash(uint32_t address, uint8_t value) {
@@ -80,7 +80,7 @@ void TestHelper::resetDevice() { _resetDeviceCalled = true; }
 [[nodiscard]] uint32_t TestHelper::getVendorID() const { return _vendor_id; }
 [[nodiscard]] uint32_t TestHelper::getProductID() const { return _product_id; }
 [[nodiscard]] uint32_t TestHelper::getProductionDate() const { return _production_date; }
-[[nodiscard]] uint32_t TestHelper::getUniqueID() const { return _unique_id; }
+[[nodiscard]] uint32_t TestHelper::getUniqueIDWord(const uint32_t idx) const { return _unique_id[idx]; }
 [[nodiscard]] uint32_t TestHelper::calculateCRC(const uint32_t src_address, const uint32_t num_bytes) {
   _crc_calc_src_address = src_address;
   _crc_calc_num_bytes = num_bytes;
@@ -174,10 +174,10 @@ void hwi::resetDevice() {
   return value;
 }
 
-[[nodiscard]] uint32_t hwi::getUniqueID() {
+[[nodiscard]] uint32_t hwi::getUniqueIDWord(uint32_t idx) {
   uint32_t value = 0U;
   if (test_utils::testInstance != nullptr) {
-    value = test_utils::testInstance->getUniqueID();
+    value = test_utils::testInstance->getUniqueIDWord(idx);
   }
 
   return value;

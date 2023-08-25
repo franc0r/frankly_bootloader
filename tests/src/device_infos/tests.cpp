@@ -144,8 +144,8 @@ TEST_F(DeviceInfoTests, ProductionDate) {
   }
 }
 
-TEST_F(DeviceInfoTests, UniqueID) {
-  constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_UID;
+TEST_F(DeviceInfoTests, UniqueID1) {
+  constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_UID_1;
   constexpr uint8_t PACKET_ID = 0;
   constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
 
@@ -160,7 +160,70 @@ TEST_F(DeviceInfoTests, UniqueID) {
   EXPECT_EQ(response.request, REQUEST);
   EXPECT_EQ(response.result, EXPECTED_RESPONSE);
   for (auto idx = 0U; idx < response.data.size(); idx++) {
-    const auto expected_val = static_cast<uint8_t>(this->getUniqueID() >> (8U * idx));
+    const auto expected_val = static_cast<uint8_t>(this->getUniqueIDWord(0) >> (8U * idx));
+    EXPECT_EQ(response.data.at(idx), expected_val);
+  }
+}
+
+TEST_F(DeviceInfoTests, UniqueID2) {
+  constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_UID_2;
+  constexpr uint8_t PACKET_ID = 0;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
+
+  /* Create request */
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
+
+  /* Process request and get response */
+  getHandle().processRequest(request_msg);
+  const auto response = getHandle().getResponse();
+
+  /* Check response */
+  EXPECT_EQ(response.request, REQUEST);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
+  for (auto idx = 0U; idx < response.data.size(); idx++) {
+    const auto expected_val = static_cast<uint8_t>(this->getUniqueIDWord(1) >> (8U * idx));
+    EXPECT_EQ(response.data.at(idx), expected_val);
+  }
+}
+
+TEST_F(DeviceInfoTests, UniqueID3) {
+  constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_UID_3;
+  constexpr uint8_t PACKET_ID = 0;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
+
+  /* Create request */
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
+
+  /* Process request and get response */
+  getHandle().processRequest(request_msg);
+  const auto response = getHandle().getResponse();
+
+  /* Check response */
+  EXPECT_EQ(response.request, REQUEST);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
+  for (auto idx = 0U; idx < response.data.size(); idx++) {
+    const auto expected_val = static_cast<uint8_t>(this->getUniqueIDWord(2) >> (8U * idx));
+    EXPECT_EQ(response.data.at(idx), expected_val);
+  }
+}
+
+TEST_F(DeviceInfoTests, UniqueID4) {
+  constexpr msg::RequestType REQUEST = msg::REQ_DEV_INFO_UID_4;
+  constexpr uint8_t PACKET_ID = 0;
+  constexpr msg::ResultType EXPECTED_RESPONSE = msg::RES_OK;
+
+  /* Create request */
+  msg::Msg request_msg = msg::Msg(REQUEST, msg::RES_NONE, PACKET_ID);
+
+  /* Process request and get response */
+  getHandle().processRequest(request_msg);
+  const auto response = getHandle().getResponse();
+
+  /* Check response */
+  EXPECT_EQ(response.request, REQUEST);
+  EXPECT_EQ(response.result, EXPECTED_RESPONSE);
+  for (auto idx = 0U; idx < response.data.size(); idx++) {
+    const auto expected_val = static_cast<uint8_t>(this->getUniqueIDWord(3) >> (8U * idx));
     EXPECT_EQ(response.data.at(idx), expected_val);
   }
 }

@@ -43,7 +43,7 @@ class TestHelper : public ::testing::Test {
   void setVendorID(uint32_t value);
   void setProductID(uint32_t value);
   void setProductionDate(uint32_t value);
-  void setUniqueID(uint32_t value);
+  void setUniqueIDWord(uint32_t idx, uint32_t value);
   void setCRCResult(uint32_t value);
 
   void setByteInFlash(uint32_t address, uint8_t value);
@@ -68,7 +68,7 @@ class TestHelper : public ::testing::Test {
   [[nodiscard]] uint32_t getVendorID() const;
   [[nodiscard]] uint32_t getProductID() const;
   [[nodiscard]] uint32_t getProductionDate() const;
-  [[nodiscard]] uint32_t getUniqueID() const;
+  [[nodiscard]] uint32_t getUniqueIDWord(uint32_t idx) const;
   [[nodiscard]] uint32_t calculateCRC(const uint32_t src_address, uint32_t num_bytes);  // NOLINT
   bool eraseFlashPage(uint32_t page_id);
   bool writeDataBufferToFlash(uint32_t dst_address, uint32_t dst_page_id, uint8_t* src_data_ptr, uint32_t num_bytes);
@@ -84,7 +84,7 @@ class TestHelper : public ::testing::Test {
   uint32_t _vendor_id = {0U};
   uint32_t _product_id = {0U};
   uint32_t _production_date = {0U};
-  uint32_t _unique_id = {0U};
+  uint32_t _unique_id[4U] = {0x11, 0x22, 0x33, 0x44};
 
   uint32_t _crc_calc_src_address = {0U};
   uint32_t _crc_calc_num_bytes = {0U};

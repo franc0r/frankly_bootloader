@@ -168,7 +168,7 @@ void hwi::resetDevice() {}
 
 [[nodiscard]] uint32_t hwi::getProductionDate() { return sim_device::PRODUCTION_DATE; }
 
-[[nodiscard]] uint32_t hwi::getUniqueID() { return 0U; }
+[[nodiscard]] uint32_t hwi::getUniqueIDWord(const uint32_t idx) { return (idx +  1U); }
 
 uint32_t hwi::calculateCRC(uint32_t src_address, uint32_t num_bytes) {
   (void)src_address;

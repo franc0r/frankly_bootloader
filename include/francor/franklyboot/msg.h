@@ -59,7 +59,12 @@ enum RequestType : uint16_t {
   REQ_DEV_INFO_VID = 0x0103U,                 //!< Reads the vendor id
   REQ_DEV_INFO_PID = 0x0104U,                 //!< Reads the product id
   REQ_DEV_INFO_PRD = 0x0105U,                 //!< Reads the production date
-  REQ_DEV_INFO_UID = 0x0106U,                 //!< Reads the device unique ID
+
+  /* 128-Bit unique ID */
+  REQ_DEV_INFO_UID_1 = 0x0106U,  //!< Reads the device unique ID bit [0:31]
+  REQ_DEV_INFO_UID_2 = 0x0107U,  //!< Reads the device unique ID bit [32:63]
+  REQ_DEV_INFO_UID_3 = 0x0108U,  //!< Reads the device unique ID bit [64:95]
+  REQ_DEV_INFO_UID_4 = 0x0109U,  //!< Reads the device unique ID bit [96:127]
 
   /* Flash information */
   REQ_FLASH_INFO_START_ADDR = 0x0201U,  //!< Get the start address of the flash area

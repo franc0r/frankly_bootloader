@@ -87,8 +87,20 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::processRequest(const msg::Msg& msg) {
       handleReqInfoProductionDate();
       break;
 
-    case msg::REQ_DEV_INFO_UID:
-      handleReqInfoUniqueID();
+    case msg::REQ_DEV_INFO_UID_1:
+      handleReqInfoUniqueID(msg::REQ_DEV_INFO_UID_1);
+      break;
+
+    case msg::REQ_DEV_INFO_UID_2:
+      handleReqInfoUniqueID(msg::REQ_DEV_INFO_UID_2);
+      break;
+
+    case msg::REQ_DEV_INFO_UID_3:
+      handleReqInfoUniqueID(msg::REQ_DEV_INFO_UID_3);
+      break;
+
+    case msg::REQ_DEV_INFO_UID_4:
+      handleReqInfoUniqueID(msg::REQ_DEV_INFO_UID_4);
       break;
 
     case msg::REQ_FLASH_INFO_START_ADDR:
@@ -257,9 +269,28 @@ void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoProductionDate() {
 }
 
 FRANKLYBOOT_HANDLER_TEMPL
-void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoUniqueID() {
-  this->_response = msg::Msg(msg::REQ_DEV_INFO_UID, msg::RES_OK, 0);
-  msg::convertU32ToMsgData(hwi::getUniqueID(), this->_response.data);
+void FRANKLYBOOT_HANDLER_TEMPL_PREFIX::handleReqInfoUniqueID(const msg::RequestType request) {
+  this->_response = msg::Msg(request, msg::RES_OK, 0);
+  uint32_t data;
+  switch (request) {
+    case msg::REQ_DEV_INFO_UID_1:
+      data = hwi::getUniqueIDWord(0);
+      break;
+    case msg::REQ_DEV_INFO_UID_2:
+      data = hwi::getUniqueIDWord(1);
+      break;
+    case msg::REQ_DEV_INFO_UID_3:
+      data = hwi::getUniqueIDWord(2);
+      break;
+    case msg::REQ_DEV_INFO_UID_4:
+      data = hwi::getUniqueIDWord(3);
+      break;
+    default:
+      data = 0U;
+      break;
+  }
+
+  msg::convertU32ToMsgData(data, this->_response.data);
 }
 
 // Flash Info Requests ------------------------------------------------------------------------------------------------
