@@ -1,6 +1,9 @@
 <!-- docs/_sidebar.md -->
 * [HOME](./)
 
+* [Architecture](./architecture.md)
+* [Development Guide](./development.md)
+
 * [Communication Protocol](./protocol/README.md)
   * [Request Types](./protocol/RequestTypes/README.md)
     * [REQ_PING](./protocol/RequestTypes/REQ_PING.md)
@@ -11,7 +14,7 @@
     * [REQ_DEV_INFO_VID](./protocol/RequestTypes/REQ_DEV_INFO_VID.md)
     * [REQ_DEV_INFO_PID](./protocol/RequestTypes/REQ_DEV_INFO_PID.md)
     * [REQ_DEV_INFO_PRD](./protocol/RequestTypes/REQ_DEV_INFO_PRD.md)
-    * [REQ_DEV_INFO_UID](./protocol/RequestTypes/REQ_DEV_INFO_UID.md)
+    * [REQ_DEV_INFO_UID (128-bit)](./protocol/RequestTypes/REQ_DEV_INFO_UID.md)
     * [REQ_FLASH_INFO_START_ADDR](./protocol/RequestTypes/REQ_FLASH_INFO_START_ADDR.md)
     * [REQ_FLASH_INFO_PAGE_SIZE](./protocol/RequestTypes/REQ_FLASH_INFO_PAGE_SIZE.md)
     * [REQ_FLASH_INFO_NUM_PAGES](./protocol/RequestTypes/REQ_FLASH_INFO_NUM_PAGES.md)
