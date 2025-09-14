@@ -1,0 +1,13 @@
+{
+    "clangd.arguments": [
+        "--header-insertion=never"
+    ],
+    "C_Cpp.intelliSenseEngine": "Disabled",
+    "editor.defaultFormatter": "xaver.clang-format",
+    "editor.formatOnSave": true,
+    "cSpell.diagnosticLevel": "Hint",
+    "cSpell.ignoreRegExpList": [
+        ".*"
+      ]
+    
+}

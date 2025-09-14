@@ -1,0 +1,44 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.231.6/containers/ubuntu
+{
+	"name": "EduArt Bootloader Dev Container",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": { "VARIANT": "latest" },
+	},
+	"runArgs": [
+		"-it",
+		"--rm",
+		"--privileged",
+		"--net=host",
+		"--pid=host",
+		"--device=/dev/stlinkv2_2"
+	  ],
+	"workspaceMount": "source=${localWorkspaceFolder},target=/home/user/${localWorkspaceFolderBasename},type=bind",
+	"workspaceFolder": "/home/user/${localWorkspaceFolderBasename}",
+	"remoteUser": "user",
+	"extensions": [
+	  //"ms-vscode.cpptools",
+	  //"ms-vscode.cpptools-linux",
+	  "shd101wyy.markdown-preview-enhanced",
+	  "2gua.rainbow-brackets",
+	  "ms-vscode.cmake-tools",
+	  "ms-vscode.cpptools-extension-pack",
+	  "llvm-vs-code-extensions.vscode-clangd", 
+	  "xaver.clang-format",
+	  "ms-python.python",
+	  "ms-azuretools.vscode-docker",
+	  "ms-vscode-remote.remote-containers",
+	  "vscode-icons-team.vscode-icons",
+	  "editorconfig.editorconfig",
+	  "eamodio.gitlens",
+	  "xaver.clang-format",
+	  "llvm-vs-code-extensions.vscode-clangd",
+	  "streetsidesoftware.code-spell-checker",
+	  "cschlosser.doxdocgen",
+	  "yzhang.markdown-all-in-one",
+	  "rust-lang.rust-analyzer",
+	  "notskm.clang-tidy"
+	]
+}
+    

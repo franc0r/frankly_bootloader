@@ -1,0 +1,98 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master, devel ]
+    paths:
+      # Trigger on code changes
+      - 'include/**'
+      - 'src/**'
+      - 'tests/**'
+      - 'utils/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ master, devel ]
+    paths:
+      - 'include/**'
+      - 'src/**'
+      - 'tests/**'
+      - 'utils/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/**'
+
+jobs:
+  # Test and build the library
+  test-build:
+    name: Test and Build Library
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential libgtest-dev
+
+      - name: Build Google Test
+        run: |
+          cd /usr/src/gtest
+          sudo cmake CMakeLists.txt
+          sudo make
+          sudo cp lib/*.a /usr/lib
+
+      - name: Create build directory
+        run: mkdir -p build
+
+      - name: Configure CMake
+        run: |
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build project
+        run: |
+          cd build
+          make -j$(nproc)
+
+      - name: Run tests
+        run: |
+          cd build
+          CTEST_OUTPUT_ON_FAILURE=1 ctest --verbose
+
+  # Deploy documentation to GitHub Pages (only on master branch after successful tests)
+  deploy-docs:
+    name: Deploy Documentation
+    runs-on: ubuntu-latest
+    needs: test-build
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload documentation artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './docs'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v3
+
+      - name: Output deployment info
+        run: |
+          echo "Documentation deployment completed!"
+          echo "Available at: ${{ steps.deployment.outputs.page_url }}"

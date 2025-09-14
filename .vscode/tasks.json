@@ -1,0 +1,27 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "cmake .. && make && CTEST_OUTPUT_ON_FAILURE=TRUE make test && cp compile_commands.json ${workspaceFolder}",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher":"$gcc",
+            "options": {"cwd": "${workspaceFolder}/build"}
+        },
+        {
+            "label": "Cleanup",
+            "type": "shell",
+            "command": "rm compile_commands.json; rm -r build/*",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+        }
+    ]
+}
