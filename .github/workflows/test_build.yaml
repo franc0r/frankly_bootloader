@@ -1,6 +1,9 @@
 name: Build library and run tests
 on:
-  push:
+  # Manual trigger only - main workflow handles automatic triggers
+  workflow_dispatch:
+  # Also trigger on pull requests for testing
+  pull_request:
     branches: [ master, devel ]
     paths:
     - '.github/workflows/**'
@@ -9,27 +12,40 @@ on:
     - 'tests/**'
     - 'utils/**'
     - 'CMakeLists.txt'
+
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Install gtest
-        run: sudo apt-get install libgtest-dev
-      - uses: actions/checkout@v3
-      - name: Build & Test
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential libgtest-dev
+
+      - name: Build Google Test
+        run: |
+          cd /usr/src/gtest
+          sudo cmake CMakeLists.txt
+          sudo make
+          sudo cp lib/*.a /usr/lib
+
+      - name: Create build directory
+        run: mkdir build
+
+      - name: Configure CMake
         run: |
           cd build
-          cmake ..
-          make
-  run-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install gtest
-        run: sudo apt-get install libgtest-dev
-      - uses: actions/checkout@v3
-      - name: Build & Test
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build project
         run: |
           cd build
-          cmake ..
-          make
-          CTEST_OUTPUT_ON_FAILURE=TRUE make test    
+          make -j$(nproc)
+
+      - name: Run tests
+        run: |
+          cd build
+          CTEST_OUTPUT_ON_FAILURE=1 ctest --verbose
