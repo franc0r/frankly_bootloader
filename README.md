@@ -82,9 +82,12 @@ ctest
 
 Comprehensive documentation is available in the [docs/](docs/) directory:
 
-- [Communication Protocol](docs/protocol/README.md)
-- [Request Types](docs/protocol/RequestTypes/README.md)
-- [Result Types](docs/protocol/ResultTypes.md)
+- [Architecture Overview](docs/architecture.md) - System design and component interaction
+- [Integration Guide](docs/integration.md) - Step-by-step guide for integrating the bootloader into new hardware
+- [Development Guide](docs/development.md) - Testing, tools, and development workflow
+- [Communication Protocol](docs/protocol/README.md) - Message format and protocol specification
+- [Request Types](docs/protocol/RequestTypes/README.md) - Complete reference of all request types
+- [Result Types](docs/protocol/ResultTypes.md) - Error codes and response types
 - [Implementation Examples](https://github.com/franc0r/frankly_bootloader_examples) (External repository)
 
 ## Project Structure
