@@ -2,6 +2,7 @@
 * [HOME](./)
 
 * [Architecture](./architecture.md)
+* [Integration Guide](./integration.md)
 * [Development Guide](./development.md)
 
 * [Communication Protocol](./protocol/README.md)
